@@ -13,7 +13,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-For those of us who work with acoustically-tagged fish, often one of the first things we need to do when we get our field data is to generate a record of each fish’s "encounters" with the acoustic receivers (also called monitors) in an array.  If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials for each fish, with successes (1s) or failures (0s).  These encounter histories are simply the translation of a fish's path into a row of 1s and 0s, each corresponding to a receiver location in the acoustic array.  
+When working with acoustically-tagged fish, we often want to generate a record of each fish’s "encounters" with the acoustic receivers (also called monitors) in an array.  If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials for each fish, with successes (1s) or failures (0s).  These encounter histories are simply the translation of a fish's path into a row of 1s and 0s, each corresponding to a positive or negative detection record at a receiver location in the acoustic array.  
 
 An encounter history `dataframe` might look like this:
 
@@ -39,9 +39,9 @@ d <- structure(list(TagID = c(4842L, 4843L, 4844L, 4845L, 4847L, 4848L,
 d[1:10,]
 ```
 
-Where each row represents a different tagged fish, and each column represents a different receiver location, ordered from the most upstream (Release) to the most downstream (MAW).  A "1" indicates a successful detection at that receiver, and a 0 represents a lack of detection.  A tidied version of this data is included in the code below.
+Where each row represents a different tagged fish, and each column represents a different receiver location, ordered from the most upstream (the "Release" station") to the most downstream (in this case, Station "MAW").  A  "1" indicates a successful detection at that receiver, and a 0 represents a lack of detection.  A [tidied](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) version of this data is in the code below.
 
-A typical pattern for outmigrating juvenile fish is to see most individuals detected at a release site, and then observe the detection rate declining across fish as they migrate downstream and succumb to predation or other mortality factors.  However, some fish will miss one monitor only to be detected at one or more monitors downstream.  Because the missed monitors (which look like 0s or NAs in the dataset) are just as important as the hit monitors, we want to include them in our visualizations.
+A typical pattern of encounter histories for outmigrating juvenile fish is to see the detection rate decline across fish as they migrate downstream and succumb to predation or other mortality factors.  However, some fish will miss one monitor only to be detected at one or more monitors downstream.  Because the missed monitors (which look like 0s or NAs in the dataset) are just as important as the hit monitors, we want to include them in our visualizations.
 
 The following code will allow you to download the sample data and visualize it with ggplot2, provided you have all the packages listed below installed.  The visualization we've chosen is one that utilizes `geom_path()` to connect each fish's string of encounters together.
 
@@ -54,6 +54,7 @@ download.file('https://github.com/Myfanwy/ReproducibleExamples/raw/master/encoun
 (d <- read_csv("fishdata.csv"))
 
 ```
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 (d <- read_csv("../../data/fishdata.csv"))
@@ -68,5 +69,54 @@ encounters <- mutate(d,
                      Monitor = factor(Station, levels = unique(d$Station)))
 ```
 
-Then, we want to code each fish's contiguous path as belonging to its own group of encounters so that `geom_path()` can recognize them as a group when we plot it.  A handy way to do this in R is to write a custom function that will apply a grouping variable to each fish's detections.  Bob accomplishes this by using `purrr::map()` with the `rle()` function (where rle stands for run-length encoding.  Type `?rle()` into your R console to find out what this function does).  The following function is designed to apply the run-length encoding function to the 1/0 column for a single fish, and then assign each contiguous group a letter variable that we will be able to use with ggplot2 later.
+Then, we want to code each fish's contiguous path as belonging to its own group of encounters so that `geom_path()` can recognize them as a group when we plot it.  A handy way to do this in R is to write a custom function that will apply a grouping variable to each fish's detections.  Bob accomplishes this by using `purrr::map()` with the `rle()` function (where rle stands for run-length encoding.  Type `?rle()` into your R console to find out more about it).  The following function is designed to apply the run-length encoding function to the 1/0 column for a single fish, and then assign each contiguous group of length encodings a letter variable that we will be able to use with ggplot2 later.
+
+```{r}
+
+make_groups <- function(tag, val) {
+  r <- rle(val) # where val will be the 0/1 column in the full data frame
+  flatten_chr(map(1:length(r$lengths), function(i) { # for 1:length(r$lengths), apply the flatten_chr function to the letter corresponding to the ith value, and then call that object grps
+    rep(LETTERS[i], r$lengths[i])
+  })) -> grps
+  
+  sprintf("%s.%s", tag, grps) # this just concatenates the tag and the letter values into a single string.
+}
+
+# now, apply the above function to the whole dataframe:
+
+group_by(encounters, TagID) %>% 
+  mutate(grp = make_groups(TagID, value)) %>% 
+  filter(value != 0) %>%  # we don't want to include rows that aren't part of the fish's actual path
+  ungroup() -> encounters2
+
+arrange(encounters2, TagID)
+```
+
+We now have a `dataframe` composed of each fish's complete paths - let's plot them!  The `theme_ipsum()` from [@hrbrmstr's](https://github.com/hrbrmstr) `hrbrthemes` package takes us a long way towards cleaning up the plot:
+
+```{r}
+ggplot(encounters2, aes(x = Monitor, y = TagID)) +
+  geom_path(aes(group = grp), size = 0.25) +
+  geom_point(shape = 18, size = 2) +
+  labs(title = "Encounter histories of 25 tagged Chinook salmon smolts",
+       subtitle = "Upstream to downstream") +
+  hrbrthemes::theme_ipsum()
+```
+
+
+For fun, let's put some actual fish shapes on the plot going down their paths.  There are a few ways to do this, but one is to install the "Le Fish" font (available for download [here](https://github.com/Myfanwy/ReproducibleExamples/blob/master/encounterhistories/le_fish.zip)) on your computer, and then register it with R via the `extrafonts` package.  For detailed instructions on how to install a custom font, check out [this page here](https://cran.r-project.org/web/packages/extrafont/README.html).
+
+Once you have the font installed and registered, you can call it onto your plot with `geom_text()`:
+
+```{r, fig.height=10, fig.width=10}
+library(extrafont)
+
+ggplot(encounters2, aes(x = Monitor, y = TagID)) +
+  geom_path(aes(group = grp), size = 0.25) +
+  geom_text(label= "X", size=9, vjust=0.6, family= "LEFISH") +
+  labs(title = "Encounter histories of 25 tagged Chinook salmon smolts",
+       subtitle = "Upstream to downstream") +
+  hrbrthemes::theme_ipsum()
+
+```
 
