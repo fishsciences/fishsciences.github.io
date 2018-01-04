@@ -1,0 +1,72 @@
+---
+title: Visualizing Fish Encounter Histories
+author: Myfanwy Johnston, Bob Rudis
+date: '2018-01-05'
+slug: visualizing-fish-encounter-histories
+categories:
+  - visualization
+  - R
+tags:
+  - viz
+  - ggplot2
+editor_options: 
+  chunk_output_type: console
+---
+
+For those of us who work with acoustically-tagged fish, often one of the first things we need to do when we get our field data is to generate a record of each fish’s "encounters" with the acoustic receivers (also called monitors) in an array.  If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials for each fish, with successes (1s) or failures (0s).  These encounter histories are simply the translation of a fish's path into a row of 1s and 0s, each corresponding to a receiver location in the acoustic array.  
+
+An encounter history `dataframe` might look like this:
+
+```{r, echo=FALSE}
+d <- structure(list(TagID = c(4842L, 4843L, 4844L, 4845L, 4847L, 4848L, 
+4849L, 4850L, 4851L, 4854L, 4855L, 4857L, 4858L, 4859L, 4861L, 
+4862L, 4863L, 4864L, 4865L), Release = c(1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L), I80_1 = c(1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L), Lisbon = c(1L, 1L, 1L, 1L, 1L, 1L, 0L, 0L, 0L, 0L, 1L, 
+1L, 1L, 1L, 1L, 1L, 0L, 0L, 1L), Rstr = c(1L, 1L, 1L, 1L, 0L, 
+1L, 0L, 1L, 0L, 0L, 1L, 1L, 1L, 1L, 1L, 1L, 0L, 0L, 0L), Base_TD = c(1L, 
+1L, 1L, 1L, 0L, 0L, 0L, 1L, 0L, 0L, 1L, 1L, 1L, 1L, 1L, 1L, 0L, 
+0L, 0L), BCE = c(1L, 1L, 1L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 0L, 
+1L, 1L, 0L, 1L, 1L, 0L, 0L, 0L), BCW = c(1L, 1L, 1L, 0L, 0L, 
+0L, 0L, 1L, 0L, 0L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 0L, 0L), MAE = c(1L, 
+1L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 1L, 0L, 0L, 
+0L, 0L), MAW = c(1L, 1L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+0L, 1L, 0L, 1L, 0L, 0L, 0L, 0L)), class = "data.frame", row.names = c(NA, 
+19L), .Names = c("TagID", "Release", "I80_1", "Lisbon", "Rstr", 
+"Base_TD", "BCE", "BCW", "MAE", "MAW"))
+
+d[1:10,]
+```
+
+Where each row represents a different tagged fish, and each column represents a different receiver location, ordered from the most upstream (Release) to the most downstream (MAW).  A "1" indicates a successful detection at that receiver, and a 0 represents a lack of detection.  A tidied version of this data is included in the code below.
+
+A typical pattern for outmigrating juvenile fish is to see most individuals detected at a release site, and then observe the detection rate declining across fish as they migrate downstream and succumb to predation or other mortality factors.  However, some fish will miss one monitor only to be detected at one or more monitors downstream.  Because the missed monitors (which look like 0s or NAs in the dataset) are just as important as the hit monitors, we want to include them in our visualizations.
+
+The following code will allow you to download the sample data and visualize it with ggplot2, provided you have all the packages listed below installed.  The visualization we've chosen is one that utilizes `geom_path()` to connect each fish's string of encounters together.
+
+```{r, echo=TRUE, eval=FALSE}
+library(tidyverse)
+
+# download sample data; note that the destfile path defaults to your root directory; adjust filepath as necessary.
+download.file('https://github.com/Myfanwy/ReproducibleExamples/raw/master/encounterhistories/fishdata.csv', destfile = "fishdata.csv")
+
+(d <- read_csv("fishdata.csv"))
+
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+(d <- read_csv("../../data/fishdata.csv"))
+```
+
+The dataframe `d` now has TagID and Station (monitor) as columns, and the 1/0 detection indicator as the `value` column.
+
+First, it's easier to work with both the TagIDs and monitors if they're ordered factors:
+```{r}
+encounters <- mutate(d,
+                     TagID = factor(TagID),
+                     Monitor = factor(Station, levels = unique(d$Station)))
+```
+
+Then, we want to code each fish's contiguous path as belonging to its own group of encounters so that `geom_path()` can recognize them as a group when we plot it.  A handy way to do this in R is to write a custom function that will apply a grouping variable to each fish's detections.  Bob accomplishes this by using `purrr::map()` with the `rle()` function (where rle stands for run-length encoding.  Type `?rle()` into your R console to find out what this function does).  The following function is designed to apply the run-length encoding function to the 1/0 column for a single fish, and then assign each contiguous group a letter variable that we will be able to use with ggplot2 later.
+

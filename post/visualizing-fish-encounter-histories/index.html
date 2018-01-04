@@ -1,0 +1,138 @@
+	
+	<!doctype html>
+<html lang="en">
+  <head>    
+    <title>ALEXFINN - Visualizing Fish Encounter Histories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+    
+    <link href="/css/milk.min.css" rel="stylesheet">
+    <link href="/css/milk-responsive.min.css" rel="stylesheet">     
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/css/fonts.css" rel="stylesheet" type="text/css" media="all">
+    <link rel="shortcut icon" href="/images/alexfinn.ico"> 
+    <link rel="apple-touch-icon" href="">
+    <link rel="canonical" href="/post/visualizing-fish-encounter-histories/">
+
+    
+    <link href="/rss.xml" type="application/atom+xml" rel="alternate" title="Practical Pisces">    
+
+  </head>
+  <body>    
+    <div class="navbar navbar-fixed-top">        
+  <div id="navbar-inner">
+          <div id="logo">
+            <a href=""><img src="/images/letter-a.png" width="100px"></img></a>
+          </div>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="content">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="posts">
+      
+
+	    
+	  <div class="post">
+	    <header class="post-header">
+	        <h1><a href="/post/visualizing-fish-encounter-histories/">Visualizing Fish Encounter Histories</a></h1>
+	        <div class="post-time">January 5 2018</div>
+	    </header>
+	    <div class="post-after">
+	        <div class="tags">
+	            
+	                <a href="//tags/viz">viz</a>              
+	            
+	                <a href="//tags/ggplot2">ggplot2</a>              
+	            
+	        </div>
+	    </div>
+	    <hr>
+	    <div class="post content">
+	        <p>For those of us who work with acoustically-tagged fish, often one of the first things we need to do when we get our field data is to generate a record of each fish’s “encounters” with the acoustic receivers (also called monitors) in an array. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials for each fish, with successes (1s) or failures (0s). These encounter histories are simply the translation of a fish’s path into a row of 1s and 0s, each corresponding to a receiver location in the acoustic array.</p>
+<p>An encounter history <code>dataframe</code> might look like this:</p>
+<pre><code>##    TagID Release I80_1 Lisbon Rstr Base_TD BCE BCW MAE MAW
+## 1   4842       1     1      1    1       1   1   1   1   1
+## 2   4843       1     1      1    1       1   1   1   1   1
+## 3   4844       1     1      1    1       1   1   1   1   1
+## 4   4845       1     1      1    1       1   0   0   0   0
+## 5   4847       1     1      1    0       0   0   0   0   0
+## 6   4848       1     1      1    1       0   0   0   0   0
+## 7   4849       1     1      0    0       0   0   0   0   0
+## 8   4850       1     1      0    1       1   1   1   0   0
+## 9   4851       1     1      0    0       0   0   0   0   0
+## 10  4854       1     1      0    0       0   0   0   0   0</code></pre>
+<p>Where each row represents a different tagged fish, and each column represents a different receiver location, ordered from the most upstream (Release) to the most downstream (MAW). A “1” indicates a successful detection at that receiver, and a 0 represents a lack of detection. A tidied version of this data is included in the code below.</p>
+<p>A typical pattern for outmigrating juvenile fish is to see most individuals detected at a release site, and then observe the detection rate declining across fish as they migrate downstream and succumb to predation or other mortality factors. However, some fish will miss one monitor only to be detected at one or more monitors downstream. Because the missed monitors (which look like 0s or NAs in the dataset) are just as important as the hit monitors, we want to include them in our visualizations.</p>
+<p>The following code will allow you to download the sample data and visualize it with ggplot2, provided you have all the packages listed below installed. The visualization we’ve chosen is one that utilizes <code>geom_path()</code> to connect each fish’s string of encounters together.</p>
+<pre class="r"><code>library(tidyverse)
+
+# download sample data; note that the destfile path defaults to your root directory; adjust filepath as necessary.
+download.file(&#39;https://github.com/Myfanwy/ReproducibleExamples/raw/master/encounterhistories/fishdata.csv&#39;, destfile = &quot;fishdata.csv&quot;)
+
+(d &lt;- read_csv(&quot;fishdata.csv&quot;))</code></pre>
+<pre><code>## # A tibble: 209 x 3
+##    TagID Station value
+##    &lt;int&gt;   &lt;chr&gt; &lt;int&gt;
+##  1  4842 Release     1
+##  2  4843 Release     1
+##  3  4844 Release     1
+##  4  4845 Release     1
+##  5  4847 Release     1
+##  6  4848 Release     1
+##  7  4849 Release     1
+##  8  4850 Release     1
+##  9  4851 Release     1
+## 10  4854 Release     1
+## # ... with 199 more rows</code></pre>
+<p>The dataframe <code>d</code> now has TagID and Station (monitor) as columns, and the 1/0 detection indicator as the <code>value</code> column.</p>
+<p>First, it’s easier to work with both the TagIDs and monitors if they’re ordered factors:</p>
+<pre class="r"><code>encounters &lt;- mutate(d,
+                     TagID = factor(TagID),
+                     Monitor = factor(Station, levels = unique(d$Station)))</code></pre>
+<p>Then, we want to code each fish’s contiguous path as belonging to its own group of encounters so that <code>geom_path()</code> can recognize them as a group when we plot it. A handy way to do this in R is to write a custom function that will apply a grouping variable to each fish’s detections. Bob accomplishes this by using <code>purrr::map()</code> with the <code>rle()</code> function (where rle stands for run-length encoding. Type <code>?rle()</code> into your R console to find out what this function does). The following function is designed to apply the run-length encoding function to the 1/0 column for a single fish, and then assign each contiguous group a letter variable that we will be able to use with ggplot2 later.</p>
+
+	    </div>
+	    
+	<div class="about">
+	<p> 
+     
+    </p>
+</div>
+		<nav id="pagination">
+			
+			<a class="next" href="/post/2018-01-03-welcome/">Next</a>
+		</nav>
+	
+		        <footer>
+		        	Built with <a href="https://github.com/spf13/hugo">Hugo</a> 
+		        	<p>© Alexander Ivanov 2014</p>
+		        </footer>
+		    </div>
+		  </div>    
+		</div>
+      </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + ":change-me";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 4]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
+    g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="http://change-me" style="border:0;" alt="" /></p></noscript>
+
+
+</html>
+

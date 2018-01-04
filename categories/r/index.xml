@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>R on Practical Pisces </title>
+    <link>/categories/r/</link>
+    <language>en-us</language>
+    <author>Alexander Ivanov</author>
+    <updated>2018-01-05 00:00:00 &#43;0000 UTC</updated>
+    
+    <item>
+      <title>Visualizing Fish Encounter Histories</title>
+      <link>/post/visualizing-fish-encounter-histories/</link>
+      <pubDate>Fri, 05 Jan 2018 00:00:00 UTC</pubDate>
+      <author>Alexander Ivanov</author>
+      <guid>/post/visualizing-fish-encounter-histories/</guid>
+      <description>&lt;p&gt;For those of us who work with acoustically-tagged fish, often one of the first things we need to do when we get our field data is to generate a record of each fish’s “encounters” with the acoustic receivers (also called monitors) in an array. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials for each fish, with successes (1s) or failures (0s). These encounter histories are simply the translation of a fish’s path into a row of 1s and 0s, each corresponding to a receiver location in the acoustic array.&lt;/p&gt;
+&lt;p&gt;An encounter history &lt;code&gt;dataframe&lt;/code&gt; might look like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;##    TagID Release I80_1 Lisbon Rstr Base_TD BCE BCW MAE MAW
+## 1   4842       1     1      1    1       1   1   1   1   1
+## 2   4843       1     1      1    1       1   1   1   1   1
+## 3   4844       1     1      1    1       1   1   1   1   1
+## 4   4845       1     1      1    1       1   0   0   0   0
+## 5   4847       1     1      1    0       0   0   0   0   0
+## 6   4848       1     1      1    1       0   0   0   0   0
+## 7   4849       1     1      0    0       0   0   0   0   0
+## 8   4850       1     1      0    1       1   1   1   0   0
+## 9   4851       1     1      0    0       0   0   0   0   0
+## 10  4854       1     1      0    0       0   0   0   0   0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Where each row represents a different tagged fish, and each column represents a different receiver location, ordered from the most upstream (Release) to the most downstream (MAW). A “1” indicates a successful detection at that receiver, and a 0 represents a lack of detection. A tidied version of this data is included in the code below.&lt;/p&gt;
+&lt;p&gt;A typical pattern for outmigrating juvenile fish is to see most individuals detected at a release site, and then observe the detection rate declining across fish as they migrate downstream and succumb to predation or other mortality factors. However, some fish will miss one monitor only to be detected at one or more monitors downstream. Because the missed monitors (which look like 0s or NAs in the dataset) are just as important as the hit monitors, we want to include them in our visualizations.&lt;/p&gt;
+&lt;p&gt;The following code will allow you to download the sample data and visualize it with ggplot2, provided you have all the packages listed below installed. The visualization we’ve chosen is one that utilizes &lt;code&gt;geom_path()&lt;/code&gt; to connect each fish’s string of encounters together.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+
+# download sample data; note that the destfile path defaults to your root directory; adjust filepath as necessary.
+download.file(&amp;#39;https://github.com/Myfanwy/ReproducibleExamples/raw/master/encounterhistories/fishdata.csv&amp;#39;, destfile = &amp;quot;fishdata.csv&amp;quot;)
+
+(d &amp;lt;- read_csv(&amp;quot;fishdata.csv&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 209 x 3
+##    TagID Station value
+##    &amp;lt;int&amp;gt;   &amp;lt;chr&amp;gt; &amp;lt;int&amp;gt;
+##  1  4842 Release     1
+##  2  4843 Release     1
+##  3  4844 Release     1
+##  4  4845 Release     1
+##  5  4847 Release     1
+##  6  4848 Release     1
+##  7  4849 Release     1
+##  8  4850 Release     1
+##  9  4851 Release     1
+## 10  4854 Release     1
+## # ... with 199 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The dataframe &lt;code&gt;d&lt;/code&gt; now has TagID and Station (monitor) as columns, and the 1/0 detection indicator as the &lt;code&gt;value&lt;/code&gt; column.&lt;/p&gt;
+&lt;p&gt;First, it’s easier to work with both the TagIDs and monitors if they’re ordered factors:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;encounters &amp;lt;- mutate(d,
+                     TagID = factor(TagID),
+                     Monitor = factor(Station, levels = unique(d$Station)))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then, we want to code each fish’s contiguous path as belonging to its own group of encounters so that &lt;code&gt;geom_path()&lt;/code&gt; can recognize them as a group when we plot it. A handy way to do this in R is to write a custom function that will apply a grouping variable to each fish’s detections. Bob accomplishes this by using &lt;code&gt;purrr::map()&lt;/code&gt; with the &lt;code&gt;rle()&lt;/code&gt; function (where rle stands for run-length encoding. Type &lt;code&gt;?rle()&lt;/code&gt; into your R console to find out what this function does). The following function is designed to apply the run-length encoding function to the 1/0 column for a single fish, and then assign each contiguous group a letter variable that we will be able to use with ggplot2 later.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Welcome to the Practical Pisces (a blog mostly about fish and science)</title>
+      <link>/post/2018-01-03-welcome/</link>
+      <pubDate>Wed, 03 Jan 2018 00:00:00 UTC</pubDate>
+      <author>Alexander Ivanov</author>
+      <guid>/post/2018-01-03-welcome/</guid>
+      <description>&lt;div id=&#34;well-hello&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Well hello!&lt;/h1&gt;
+&lt;p&gt;Welcome to the Cramer Fish Sciences data science blog, the product of a handful of nerds at &lt;a href=&#34;https://fishsciences.net&#34;&gt;Cramer Fish Sciences&lt;/a&gt;. We’re here to share things about fish, fish science, coding, data visualization, and statistics.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://myfanwy.github.io&#34;&gt;Myfanwy&lt;/a&gt; will be the one who can’t stop talking about fishy viz (visualization of fish data). &lt;a href=&#34;http://www.fishsciences.net/travis-hinkelman-ph-d/&#34;&gt;Travis&lt;/a&gt; likes to think and write about simulation models and R workflows for fish sciences. &lt;a href=&#34;https://www.linkedin.com/in/kevin-ceder-a7554338/&#34;&gt;Kevin&lt;/a&gt; is actually a tree geek, but we let him talk about fish sometimes. &lt;a href=&#34;http://www.fishsciences.net/kai-ross-ph-d/&#34;&gt;Kai&lt;/a&gt; knows the best way to do everything (he specializes in optimization modeling).&lt;/p&gt;
+&lt;p&gt;Thanks for stopping by!&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
