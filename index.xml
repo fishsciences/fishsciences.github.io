@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Practical Pisces on Practical Pisces </title>
+    <link>https://fishsciences.github.io/</link>
+    <language>en-us</language>
+    <author>Alexander Ivanov</author>
+    <updated>2018-01-05 00:00:00 &#43;0000 UTC</updated>
+    
+    <item>
+      <title>Visualizing Fish Encounter Histories</title>
+      <link>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</link>
+      <pubDate>Fri, 05 Jan 2018 00:00:00 UTC</pubDate>
+      <author>Alexander Ivanov</author>
+      <guid>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</guid>
+      <description>&lt;div id=&#34;what-is-an-encounter-history&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What is an encounter history?&lt;/h2&gt;
+&lt;p&gt;When working with acoustically-tagged fish, we often generate a record of each fish’s “encounters” with the autonomous acoustic monitors in an &lt;a href=&#34;http://californiafishtracking.ucdavis.edu/region.shtml&#34;&gt;underwater array&lt;/a&gt;. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (&lt;code&gt;1&lt;/code&gt;s) or failures (&lt;code&gt;0&lt;/code&gt;s). These encounter histories are simply the translation of a fish’s path into a row of ones and zeros, each corresponding to a positive or negative detection record at a receiver location in the acoustic array.&lt;/p&gt;
+&lt;p&gt;An encounter history data frame might look like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;##    TagID Release I80_1 Lisbon Rstr Base_TD BCE BCW MAE MAW
+## 1   4842       1     1      1    1       1   1   1   1   1
+## 2   4843       1     1      1    1       1   1   1   1   1
+## 3   4844       1     1      1    1       1   1   1   1   1
+## 4   4845       1     1      1    1       1   0   0   0   0
+## 5   4847       1     1      1    0       0   0   0   0   0
+## 6   4848       1     1      1    1       0   0   0   0   0
+## 7   4849       1     1      0    0       0   0   0   0   0
+## 8   4850       1     1      0    1       1   1   1   0   0
+## 9   4851       1     1      0    0       0   0   0   0   0
+## 10  4854       1     1      0    0       0   0   0   0   0&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Where each row represents a different tagged fish, and each column represents a different monitor location (“&lt;code&gt;Station&lt;/code&gt;”), ordered from the most upstream (the “&lt;code&gt;Release&lt;/code&gt;” station) to the most downstream (in this case, station “&lt;code&gt;MAW&lt;/code&gt;”). A “&lt;code&gt;1&lt;/code&gt;” indicates a successful detection for that fish at that station, and a “&lt;code&gt;0&lt;/code&gt;” represents a lack of detection.&lt;/p&gt;
+&lt;p&gt;A typical pattern of encounter histories for outmigrating juvenile fish is to see the detection rate decline as they migrate downstream and succumb to predation or other mortality factors. However, some fish will miss one monitor upstream only to be detected at one or more monitors downstream. These missed monitors (which look like zeros or NAs in the dataset) are just as important as the hit monitors, and we want to include them in our visualizations.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;prepping-the-data-for-visualization&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Prepping the data for visualization&lt;/h2&gt;
+&lt;p&gt;The following code will allow you to download the &lt;a href=&#34;https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html&#34;&gt;tidied&lt;/a&gt; sample data and visualize it with &lt;code&gt;ggplot2&lt;/code&gt;, provided you have all the packages listed below installed.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+
+# download sample data; adjust destfile filepath as necessary.
+if (!file.exists(&amp;quot;fishdata.csv&amp;quot;)) {
+  download.file(
+    url = &amp;#39;https://github.com/Myfanwy/ReproducibleExamples/raw/master/encounterhistories/fishdata.csv&amp;#39;,
+    destfile = &amp;quot;fishdata.csv&amp;quot;
+  )
+}
+
+(d &amp;lt;- read_csv(&amp;quot;fishdata.csv&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 209 x 3
+##    TagID Station value
+##    &amp;lt;int&amp;gt; &amp;lt;chr&amp;gt;   &amp;lt;int&amp;gt;
+##  1  4842 Release     1
+##  2  4843 Release     1
+##  3  4844 Release     1
+##  4  4845 Release     1
+##  5  4847 Release     1
+##  6  4848 Release     1
+##  7  4849 Release     1
+##  8  4850 Release     1
+##  9  4851 Release     1
+## 10  4854 Release     1
+## # ... with 199 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The data frame &lt;code&gt;d&lt;/code&gt; now has TagID and Station (monitor) as columns, and the &lt;code&gt;1&lt;/code&gt;/&lt;code&gt;0&lt;/code&gt; detection indicator as the &lt;code&gt;value&lt;/code&gt; column.&lt;/p&gt;
+&lt;p&gt;First, it’s easier to work with both the &lt;code&gt;TagID&lt;/code&gt;s and monitors if they’re ordered factors (remember, the &lt;code&gt;Station&lt;/code&gt; order matters, because we want to see the fish go from upstream to downstream):&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;encounters &amp;lt;- mutate(d,
+                     TagID = factor(TagID),
+                     Station = factor(Station, levels = unique(d$Station)))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;quick-and-dirty-initial-visualization&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Quick-and-dirty initial visualization&lt;/h2&gt;
+&lt;p&gt;When starting out with a new dataset, it’s always good to see what we’re working with and get some ideas of what we DON’T want:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(encounters) +
+  geom_path(
+    aes(x = Station, y = factor(value), group = TagID, color = TagID), 
+    show.legend = FALSE
+  ) +
+  facet_wrap(~TagID, scales = &amp;quot;free_x&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Ignoring the messy axes, we can see that some fish are always detected, some fish are only detected once or twice, and one fish (&lt;code&gt;4850&lt;/code&gt;) is missed at one receiver but picked up again downstream. The challenge with this dataset is that we’re not interested in the &lt;code&gt;0&lt;/code&gt;/&lt;code&gt;1&lt;/code&gt; values in a numeric sense…which means it’s a waste of the y axis to use them there.&lt;/p&gt;
+&lt;p&gt;What we’re interested in is the overall detection trends of the data, especially the “holes” — the zeros for individual fish. It would be much better if each fish could be its own row on the y axis. This would be especially useful for identifying a particular monitor that isn’t detecting fish very well — that monitor may need servicing, or perhaps should be moved to a better spot on the river.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;getting-fish-together-on-the-same-plot&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Getting fish together on the same plot&lt;/h2&gt;
+&lt;p&gt;We want to code each fish’s detections as belonging to its own, &lt;em&gt;ordered&lt;/em&gt; group of encounters, so that &lt;code&gt;geom_path()&lt;/code&gt; can plot them separately. We also want to keep any zeros that exist in the middle of a fish’s encounter history. A handy way to do this in R is to write a custom function that works on a single fish path, and then apply that function to the full data frame of all fishpaths. The function below takes a single fish’s encounter history rows and applies a unique, identifying character string to them:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Original function author: Bob Rudis
+
+make_groups &amp;lt;- function(tag, val) {
+  
+  r &amp;lt;- rle(val) # where &amp;#39;val&amp;#39; is the 0/1 column
+  
+# for each contiguous group:
+#   apply flatten_chr() to the letter corresponding to the ith value of the 
+#   lengths column in r
+  
+  flatten_chr(map(1:length(r$lengths), function(i) { 
+    rep(LETTERS[i], r$lengths[i])
+  })) -&amp;gt; grps # save as new object
+  
+  sprintf(&amp;quot;%s.%s&amp;quot;, tag, grps) # concatenate the tag and the letter values 
+# into a single string.
+  
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now apply the function to all fish using &lt;code&gt;dplyr&lt;/code&gt;’s &lt;code&gt;group_by()&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;encounters &amp;lt;- encounters %&amp;gt;% 
+  group_by(TagID) %&amp;gt;% 
+  mutate(grp = make_groups(TagID, value)) %&amp;gt;%
+  ungroup()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;What did that do? It will be most informative to take a look at the fish that had a missed monitor in the middle of its encounter history (fish &lt;code&gt;4850&lt;/code&gt;):&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;filter(encounters, TagID == 4850)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 11 x 4
+##    TagID Station value grp   
+##    &amp;lt;fct&amp;gt; &amp;lt;fct&amp;gt;   &amp;lt;int&amp;gt; &amp;lt;chr&amp;gt; 
+##  1 4850  Release     1 4850.A
+##  2 4850  I80_1       1 4850.A
+##  3 4850  Lisbon      0 4850.B
+##  4 4850  Rstr        1 4850.C
+##  5 4850  Base_TD     1 4850.C
+##  6 4850  BCE         1 4850.C
+##  7 4850  BCW         1 4850.C
+##  8 4850  BCE2        0 4850.D
+##  9 4850  BCW2        0 4850.D
+## 10 4850  MAE         0 4850.D
+## 11 4850  MAW         0 4850.D&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The function did what we asked it to — it looked at all the rows associated with this fish, then checked to see whether that row had a &lt;code&gt;0&lt;/code&gt; or a &lt;code&gt;1&lt;/code&gt; in the &lt;code&gt;value&lt;/code&gt; column. It assigned a new letter group each time the encounter “streak” changed — that is, as long as the fish was contiguously detected, we see the same letter; the run-length encoding starts over when a &lt;code&gt;1&lt;/code&gt; changes to a &lt;code&gt;0&lt;/code&gt; or vice-versa. When we make the plot, these letter groupings will be mapped to the group aesthetic in the &lt;code&gt;geom_path()&lt;/code&gt; function, so that contiguous strings of detections can be strung together with a line, and breaks in the detection history will show up as breaks in the line.&lt;/p&gt;
+&lt;p&gt;If we tried to plot them now, with all the zeros still in the &lt;code&gt;value&lt;/code&gt; column, it looks like this:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;encounters %&amp;gt;% 
+  ggplot(aes(x = Station, y = TagID)) +
+  geom_path(aes(group = TagID), size = 0.25) +
+  geom_point(shape = 18, size = 2) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Closer than our initial plot, but R is recognizing the zeros as points on the plot, when really what we want to view is the &lt;em&gt;absence&lt;/em&gt; of those points. Let’s filter out the 0s:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_by(encounters, TagID) %&amp;gt;% 
+  filter(value != 0) %&amp;gt;%  
+  ungroup() -&amp;gt; encounters2 # save this as a new data frame&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;…And, then, plot again. This time, the &lt;code&gt;theme_ipsum()&lt;/code&gt; from &lt;a href=&#34;https://github.com/hrbrmstr&#34;&gt;hrbrmstr’s&lt;/a&gt; &lt;code&gt;hrbrthemes&lt;/code&gt; package will take us a long way towards a great-looking plot right off the bat:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(encounters2, aes(x = Station, y = TagID)) +
+  geom_path(aes(group = grp), size = 0.25) +
+  geom_point(shape = 18, size = 2) +
+  labs(title = &amp;quot;Encounter histories of 25 tagged Chinook salmon smolts&amp;quot;,
+       subtitle = &amp;quot;Upstream to downstream&amp;quot;) +
+  hrbrthemes::theme_ipsum()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Yay! Now we can see where each fish &lt;em&gt;stopped&lt;/em&gt; getting detected along the river, and continuous detections are strung together visually. Much more helpful.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;It’s important to note that the function we used only works if you have less than 26 fish; if we had more individuals, we’d have to double up on the &lt;code&gt;LETTERS&lt;/code&gt; vector.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+&lt;div id=&#34;adding-the-fun-factor&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Adding the fun factor&lt;/h2&gt;
+&lt;p&gt;Let’s put some actual fish shapes on the plot going down their paths. There are a few ways to do this, but one is to install the “Le Fish” font (available for download &lt;a href=&#34;https://github.com/Myfanwy/ReproducibleExamples/blob/master/encounterhistories/le_fish.zip&#34;&gt;here&lt;/a&gt;) on your computer, and then register it with R via the &lt;code&gt;extrafonts&lt;/code&gt; package. For detailed instructions on how to install a custom font, check out &lt;a href=&#34;https://cran.r-project.org/web/packages/extrafont/README.html&#34;&gt;this page here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Once you have the font installed and registered, you can call it onto your plot with &lt;code&gt;geom_text()&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(extrafont)
+
+ggplot(encounters2, aes(x = Station, y = TagID)) +
+  geom_path(aes(group = grp), size = 0.25) +
+  geom_text(label= &amp;quot;X&amp;quot;, size=9, vjust=0.6, family= &amp;quot;LEFISH&amp;quot;) +
+  labs(title = &amp;quot;Encounter histories of 25 tagged Chinook salmon smolts&amp;quot;,
+       subtitle = &amp;quot;Upstream to downstream&amp;quot;) +
+  hrbrthemes::theme_ipsum()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Hope this was helpful!&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Welcome to the Practical Pisces (a blog mostly about fish and science)</title>
+      <link>https://fishsciences.github.io/post/2018-01-03-welcome/</link>
+      <pubDate>Wed, 03 Jan 2018 00:00:00 UTC</pubDate>
+      <author>Alexander Ivanov</author>
+      <guid>https://fishsciences.github.io/post/2018-01-03-welcome/</guid>
+      <description>&lt;div id=&#34;well-hello&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Well hello!&lt;/h1&gt;
+&lt;p&gt;Welcome to the Cramer Fish Sciences data science blog, the product of a handful of nerds at &lt;a href=&#34;https://fishsciences.net&#34;&gt;Cramer Fish Sciences&lt;/a&gt;. We’re here to share things about fish, fish science, coding, data visualization, and statistics.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://myfanwy.github.io&#34;&gt;Myfanwy&lt;/a&gt; will be the one who can’t stop talking about fishy viz (visualization of fish data). &lt;a href=&#34;http://www.fishsciences.net/travis-hinkelman-ph-d/&#34;&gt;Travis&lt;/a&gt; likes to think and write about simulation models and R workflows for fish sciences. &lt;a href=&#34;https://www.linkedin.com/in/kevin-ceder-a7554338/&#34;&gt;Kevin&lt;/a&gt; is actually a tree geek, but we let him talk about fish sometimes. &lt;a href=&#34;http://www.fishsciences.net/kai-ross-ph-d/&#34;&gt;Kai&lt;/a&gt; knows the best way to do everything (he specializes in optimization modeling).&lt;/p&gt;
+&lt;p&gt;Thanks for stopping by!&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

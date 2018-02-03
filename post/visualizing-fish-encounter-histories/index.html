@@ -1,0 +1,242 @@
+	
+	<!doctype html>
+<html lang="en">
+  <head>    
+    <title>Practical Pisces - Visualizing Fish Encounter Histories</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+    
+    <link href="/css/milk.min.css" rel="stylesheet">
+    <link href="/css/milk-responsive.min.css" rel="stylesheet">     
+    <link href="/css/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/css/fonts.css" rel="stylesheet" type="text/css" media="all">
+    <link rel="shortcut icon" href="/images/logo2.ico"> 
+    <link rel="apple-touch-icon" href="">
+    <link rel="canonical" href="https://fishsciences.github.io/post/visualizing-fish-encounter-histories/">
+
+    
+    <link href="/rss.xml" type="application/atom+xml" rel="alternate" title="Practical Pisces">    
+
+  </head>
+  <body>    
+    <div class="navbar navbar-fixed-top">        
+  <div id="navbar-inner">
+          <div id="logo">
+            <a href=""><img src="/images/logo2.png" width="100px" hspace="5px" vspace="25px"></img></a>
+          </div>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="content">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="posts">
+      
+
+	    
+	  <div class="post">
+	    <header class="post-header">
+	        <h1><a href="/post/visualizing-fish-encounter-histories/">Visualizing Fish Encounter Histories</a></h1>
+	        <div class="post-time">January 5 2018</div>
+	    </header>
+	    <div class="post-after">
+	        <div class="tags">
+	            
+	                <a href="https://fishsciences.github.io/tags/viz">viz</a>              
+	            
+	                <a href="https://fishsciences.github.io/tags/ggplot2">ggplot2</a>              
+	            
+	        </div>
+	    </div>
+	    <hr>
+	    <div class="post content">
+	        <div id="what-is-an-encounter-history" class="section level2">
+<h2>What is an encounter history?</h2>
+<p>When working with acoustically-tagged fish, we often generate a record of each fish’s “encounters” with the autonomous acoustic monitors in an <a href="http://californiafishtracking.ucdavis.edu/region.shtml">underwater array</a>. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (<code>1</code>s) or failures (<code>0</code>s). These encounter histories are simply the translation of a fish’s path into a row of ones and zeros, each corresponding to a positive or negative detection record at a receiver location in the acoustic array.</p>
+<p>An encounter history data frame might look like this:</p>
+<pre><code>##    TagID Release I80_1 Lisbon Rstr Base_TD BCE BCW MAE MAW
+## 1   4842       1     1      1    1       1   1   1   1   1
+## 2   4843       1     1      1    1       1   1   1   1   1
+## 3   4844       1     1      1    1       1   1   1   1   1
+## 4   4845       1     1      1    1       1   0   0   0   0
+## 5   4847       1     1      1    0       0   0   0   0   0
+## 6   4848       1     1      1    1       0   0   0   0   0
+## 7   4849       1     1      0    0       0   0   0   0   0
+## 8   4850       1     1      0    1       1   1   1   0   0
+## 9   4851       1     1      0    0       0   0   0   0   0
+## 10  4854       1     1      0    0       0   0   0   0   0</code></pre>
+<p>Where each row represents a different tagged fish, and each column represents a different monitor location (“<code>Station</code>”), ordered from the most upstream (the “<code>Release</code>” station) to the most downstream (in this case, station “<code>MAW</code>”). A “<code>1</code>” indicates a successful detection for that fish at that station, and a “<code>0</code>” represents a lack of detection.</p>
+<p>A typical pattern of encounter histories for outmigrating juvenile fish is to see the detection rate decline as they migrate downstream and succumb to predation or other mortality factors. However, some fish will miss one monitor upstream only to be detected at one or more monitors downstream. These missed monitors (which look like zeros or NAs in the dataset) are just as important as the hit monitors, and we want to include them in our visualizations.</p>
+</div>
+<div id="prepping-the-data-for-visualization" class="section level2">
+<h2>Prepping the data for visualization</h2>
+<p>The following code will allow you to download the <a href="https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html">tidied</a> sample data and visualize it with <code>ggplot2</code>, provided you have all the packages listed below installed.</p>
+<pre class="r"><code>library(tidyverse)
+
+# download sample data; adjust destfile filepath as necessary.
+if (!file.exists(&quot;fishdata.csv&quot;)) {
+  download.file(
+    url = &#39;https://github.com/Myfanwy/ReproducibleExamples/raw/master/encounterhistories/fishdata.csv&#39;,
+    destfile = &quot;fishdata.csv&quot;
+  )
+}
+
+(d &lt;- read_csv(&quot;fishdata.csv&quot;))</code></pre>
+<pre><code>## # A tibble: 209 x 3
+##    TagID Station value
+##    &lt;int&gt; &lt;chr&gt;   &lt;int&gt;
+##  1  4842 Release     1
+##  2  4843 Release     1
+##  3  4844 Release     1
+##  4  4845 Release     1
+##  5  4847 Release     1
+##  6  4848 Release     1
+##  7  4849 Release     1
+##  8  4850 Release     1
+##  9  4851 Release     1
+## 10  4854 Release     1
+## # ... with 199 more rows</code></pre>
+<p>The data frame <code>d</code> now has TagID and Station (monitor) as columns, and the <code>1</code>/<code>0</code> detection indicator as the <code>value</code> column.</p>
+<p>First, it’s easier to work with both the <code>TagID</code>s and monitors if they’re ordered factors (remember, the <code>Station</code> order matters, because we want to see the fish go from upstream to downstream):</p>
+<pre class="r"><code>encounters &lt;- mutate(d,
+                     TagID = factor(TagID),
+                     Station = factor(Station, levels = unique(d$Station)))</code></pre>
+</div>
+<div id="quick-and-dirty-initial-visualization" class="section level2">
+<h2>Quick-and-dirty initial visualization</h2>
+<p>When starting out with a new dataset, it’s always good to see what we’re working with and get some ideas of what we DON’T want:</p>
+<pre class="r"><code>ggplot(encounters) +
+  geom_path(
+    aes(x = Station, y = factor(value), group = TagID, color = TagID), 
+    show.legend = FALSE
+  ) +
+  facet_wrap(~TagID, scales = &quot;free_x&quot;)</code></pre>
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Ignoring the messy axes, we can see that some fish are always detected, some fish are only detected once or twice, and one fish (<code>4850</code>) is missed at one receiver but picked up again downstream. The challenge with this dataset is that we’re not interested in the <code>0</code>/<code>1</code> values in a numeric sense…which means it’s a waste of the y axis to use them there.</p>
+<p>What we’re interested in is the overall detection trends of the data, especially the “holes” — the zeros for individual fish. It would be much better if each fish could be its own row on the y axis. This would be especially useful for identifying a particular monitor that isn’t detecting fish very well — that monitor may need servicing, or perhaps should be moved to a better spot on the river.</p>
+</div>
+<div id="getting-fish-together-on-the-same-plot" class="section level2">
+<h2>Getting fish together on the same plot</h2>
+<p>We want to code each fish’s detections as belonging to its own, <em>ordered</em> group of encounters, so that <code>geom_path()</code> can plot them separately. We also want to keep any zeros that exist in the middle of a fish’s encounter history. A handy way to do this in R is to write a custom function that works on a single fish path, and then apply that function to the full data frame of all fishpaths. The function below takes a single fish’s encounter history rows and applies a unique, identifying character string to them:</p>
+<pre class="r"><code># Original function author: Bob Rudis
+
+make_groups &lt;- function(tag, val) {
+  
+  r &lt;- rle(val) # where &#39;val&#39; is the 0/1 column
+  
+# for each contiguous group:
+#   apply flatten_chr() to the letter corresponding to the ith value of the 
+#   lengths column in r
+  
+  flatten_chr(map(1:length(r$lengths), function(i) { 
+    rep(LETTERS[i], r$lengths[i])
+  })) -&gt; grps # save as new object
+  
+  sprintf(&quot;%s.%s&quot;, tag, grps) # concatenate the tag and the letter values 
+# into a single string.
+  
+}</code></pre>
+<p>Now apply the function to all fish using <code>dplyr</code>’s <code>group_by()</code>:</p>
+<pre class="r"><code>encounters &lt;- encounters %&gt;% 
+  group_by(TagID) %&gt;% 
+  mutate(grp = make_groups(TagID, value)) %&gt;%
+  ungroup()</code></pre>
+<p>What did that do? It will be most informative to take a look at the fish that had a missed monitor in the middle of its encounter history (fish <code>4850</code>):</p>
+<pre class="r"><code>filter(encounters, TagID == 4850)</code></pre>
+<pre><code>## # A tibble: 11 x 4
+##    TagID Station value grp   
+##    &lt;fct&gt; &lt;fct&gt;   &lt;int&gt; &lt;chr&gt; 
+##  1 4850  Release     1 4850.A
+##  2 4850  I80_1       1 4850.A
+##  3 4850  Lisbon      0 4850.B
+##  4 4850  Rstr        1 4850.C
+##  5 4850  Base_TD     1 4850.C
+##  6 4850  BCE         1 4850.C
+##  7 4850  BCW         1 4850.C
+##  8 4850  BCE2        0 4850.D
+##  9 4850  BCW2        0 4850.D
+## 10 4850  MAE         0 4850.D
+## 11 4850  MAW         0 4850.D</code></pre>
+<p>The function did what we asked it to — it looked at all the rows associated with this fish, then checked to see whether that row had a <code>0</code> or a <code>1</code> in the <code>value</code> column. It assigned a new letter group each time the encounter “streak” changed — that is, as long as the fish was contiguously detected, we see the same letter; the run-length encoding starts over when a <code>1</code> changes to a <code>0</code> or vice-versa. When we make the plot, these letter groupings will be mapped to the group aesthetic in the <code>geom_path()</code> function, so that contiguous strings of detections can be strung together with a line, and breaks in the detection history will show up as breaks in the line.</p>
+<p>If we tried to plot them now, with all the zeros still in the <code>value</code> column, it looks like this:</p>
+<pre class="r"><code>encounters %&gt;% 
+  ggplot(aes(x = Station, y = TagID)) +
+  geom_path(aes(group = TagID), size = 0.25) +
+  geom_point(shape = 18, size = 2) </code></pre>
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Closer than our initial plot, but R is recognizing the zeros as points on the plot, when really what we want to view is the <em>absence</em> of those points. Let’s filter out the 0s:</p>
+<pre class="r"><code>group_by(encounters, TagID) %&gt;% 
+  filter(value != 0) %&gt;%  
+  ungroup() -&gt; encounters2 # save this as a new data frame</code></pre>
+<p>…And, then, plot again. This time, the <code>theme_ipsum()</code> from <a href="https://github.com/hrbrmstr">hrbrmstr’s</a> <code>hrbrthemes</code> package will take us a long way towards a great-looking plot right off the bat:</p>
+<pre class="r"><code>ggplot(encounters2, aes(x = Station, y = TagID)) +
+  geom_path(aes(group = grp), size = 0.25) +
+  geom_point(shape = 18, size = 2) +
+  labs(title = &quot;Encounter histories of 25 tagged Chinook salmon smolts&quot;,
+       subtitle = &quot;Upstream to downstream&quot;) +
+  hrbrthemes::theme_ipsum()</code></pre>
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Yay! Now we can see where each fish <em>stopped</em> getting detected along the river, and continuous detections are strung together visually. Much more helpful.</p>
+<blockquote>
+<p>It’s important to note that the function we used only works if you have less than 26 fish; if we had more individuals, we’d have to double up on the <code>LETTERS</code> vector.</p>
+</blockquote>
+</div>
+<div id="adding-the-fun-factor" class="section level2">
+<h2>Adding the fun factor</h2>
+<p>Let’s put some actual fish shapes on the plot going down their paths. There are a few ways to do this, but one is to install the “Le Fish” font (available for download <a href="https://github.com/Myfanwy/ReproducibleExamples/blob/master/encounterhistories/le_fish.zip">here</a>) on your computer, and then register it with R via the <code>extrafonts</code> package. For detailed instructions on how to install a custom font, check out <a href="https://cran.r-project.org/web/packages/extrafont/README.html">this page here</a>.</p>
+<p>Once you have the font installed and registered, you can call it onto your plot with <code>geom_text()</code>:</p>
+<pre class="r"><code>library(extrafont)
+
+ggplot(encounters2, aes(x = Station, y = TagID)) +
+  geom_path(aes(group = grp), size = 0.25) +
+  geom_text(label= &quot;X&quot;, size=9, vjust=0.6, family= &quot;LEFISH&quot;) +
+  labs(title = &quot;Encounter histories of 25 tagged Chinook salmon smolts&quot;,
+       subtitle = &quot;Upstream to downstream&quot;) +
+  hrbrthemes::theme_ipsum()</code></pre>
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
+<p>Hope this was helpful!</p>
+</div>
+
+	    </div>
+	    
+	<div class="about">
+	<p> 
+     
+    </p>
+</div>
+		<nav id="pagination">
+			
+			<a class="next" href="https://fishsciences.github.io/post/2018-01-03-welcome/">Next</a>
+		</nav>
+	
+		        <footer>
+		        	Built with <a href="https://github.com/spf13/hugo">Hugo</a> and <a href="https://github.com/rstudio/blogdown">Blogdown</a> 
+		        	<p>Based on simple-a theme by Alex Finn</p>
+		        </footer>
+		    </div>
+		  </div>    
+		</div>
+      </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + ":change-me";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 4]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
+    g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="http://change-me" style="border:0;" alt="" /></p></noscript>
+
+
+</html>
+
