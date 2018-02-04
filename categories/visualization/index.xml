@@ -17,7 +17,8 @@
       <pubDate>Fri, 05 Jan 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/visualizing-fish-encounter-histories/</guid>
-      <description>What is an encounter history? When working with acoustically-tagged fish, we often generate a record of each fish’s “encounters” with the autonomous acoustic monitors in an underwater array. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (1s) or failures (0s). These encounter histories are simply the translation of a fish’s path into a row of ones and zeros, each corresponding to a positive or negative detection record at a receiver location in the acoustic array.</description>
+      <description>Project Prep  Packages you’ll need: tidyverse (or individual components therein: readr, dplyr, ggplot2). Suggested package(s): extrafont, hrbrthemes.
+  What is an encounter history? When working with tagged fish swimming in a river, we often generate a record of each fish’s “encounters” with the autonomous monitors in an underwater array. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (1s) or failures (0s).</description>
     </item>
     
   </channel>

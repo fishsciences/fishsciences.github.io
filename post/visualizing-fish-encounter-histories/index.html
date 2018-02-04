@@ -54,9 +54,17 @@
 	    </div>
 	    <hr>
 	    <div class="post content">
-	        <div id="what-is-an-encounter-history" class="section level2">
+	        <p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div id="project-prep" class="section level5">
+<h5>Project Prep</h5>
+<blockquote>
+<p>Packages you’ll need: <code>tidyverse</code> (or individual components therein: <code>readr</code>, <code>dplyr</code>, <code>ggplot2</code>). Suggested package(s): <code>extrafont</code>, <code>hrbrthemes</code>.</p>
+</blockquote>
+</div>
+<div id="what-is-an-encounter-history" class="section level2">
 <h2>What is an encounter history?</h2>
-<p>When working with acoustically-tagged fish, we often generate a record of each fish’s “encounters” with the autonomous acoustic monitors in an <a href="http://californiafishtracking.ucdavis.edu/region.shtml">underwater array</a>. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (<code>1</code>s) or failures (<code>0</code>s). These encounter histories are simply the translation of a fish’s path into a row of ones and zeros, each corresponding to a positive or negative detection record at a receiver location in the acoustic array.</p>
+<p>When working with tagged fish swimming in a river, we often generate a record of each fish’s “encounters” with the autonomous monitors in an <a href="http://californiafishtracking.ucdavis.edu/region.shtml">underwater array</a>. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (<code>1</code>s) or failures (<code>0</code>s).</p>
+<p>Encounter histories are the translation of a fish’s path into a row of ones and zeros, each corresponding to a positive or negative detection record at a receiver location in the acoustic array.</p>
 <p>An encounter history data frame might look like this:</p>
 <pre><code>##    TagID Release I80_1 Lisbon Rstr Base_TD BCE BCW MAE MAW
 ## 1   4842       1     1      1    1       1   1   1   1   1
@@ -115,7 +123,7 @@ if (!file.exists(&quot;fishdata.csv&quot;)) {
     show.legend = FALSE
   ) +
   facet_wrap(~TagID, scales = &quot;free_x&quot;)</code></pre>
-<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>Ignoring the messy axes, we can see that some fish are always detected, some fish are only detected once or twice, and one fish (<code>4850</code>) is missed at one receiver but picked up again downstream. The challenge with this dataset is that we’re not interested in the <code>0</code>/<code>1</code> values in a numeric sense…which means it’s a waste of the y axis to use them there.</p>
 <p>What we’re interested in is the overall detection trends of the data, especially the “holes” — the zeros for individual fish. It would be much better if each fish could be its own row on the y axis. This would be especially useful for identifying a particular monitor that isn’t detecting fish very well — that monitor may need servicing, or perhaps should be moved to a better spot on the river.</p>
 </div>
@@ -140,6 +148,9 @@ make_groups &lt;- function(tag, val) {
 # into a single string.
   
 }</code></pre>
+<blockquote>
+<p>It’s important to note that this function only works if you have less than 26 fish; if we had more individuals, we’d have to double up on the <code>LETTERS</code> vector.</p>
+</blockquote>
 <p>Now apply the function to all fish using <code>dplyr</code>’s <code>group_by()</code>:</p>
 <pre class="r"><code>encounters &lt;- encounters %&gt;% 
   group_by(TagID) %&gt;% 
@@ -167,7 +178,7 @@ make_groups &lt;- function(tag, val) {
   ggplot(aes(x = Station, y = TagID)) +
   geom_path(aes(group = TagID), size = 0.25) +
   geom_point(shape = 18, size = 2) </code></pre>
-<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>Closer than our initial plot, but R is recognizing the zeros as points on the plot, when really what we want to view is the <em>absence</em> of those points. Let’s filter out the 0s:</p>
 <pre class="r"><code>group_by(encounters, TagID) %&gt;% 
   filter(value != 0) %&gt;%  
@@ -179,11 +190,8 @@ make_groups &lt;- function(tag, val) {
   labs(title = &quot;Encounter histories of 25 tagged Chinook salmon smolts&quot;,
        subtitle = &quot;Upstream to downstream&quot;) +
   hrbrthemes::theme_ipsum()</code></pre>
-<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>Yay! Now we can see where each fish <em>stopped</em> getting detected along the river, and continuous detections are strung together visually. Much more helpful.</p>
-<blockquote>
-<p>It’s important to note that the function we used only works if you have less than 26 fish; if we had more individuals, we’d have to double up on the <code>LETTERS</code> vector.</p>
-</blockquote>
 </div>
 <div id="adding-the-fun-factor" class="section level2">
 <h2>Adding the fun factor</h2>
@@ -197,7 +205,7 @@ ggplot(encounters2, aes(x = Station, y = TagID)) +
   labs(title = &quot;Encounter histories of 25 tagged Chinook salmon smolts&quot;,
        subtitle = &quot;Upstream to downstream&quot;) +
   hrbrthemes::theme_ipsum()</code></pre>
-<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png" width="960" /></p>
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-14-1.png" width="960" /></p>
 <p>Hope this was helpful!</p>
 </div>
 
