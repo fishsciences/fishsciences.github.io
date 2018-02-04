@@ -180,6 +180,14 @@ p {
   font-family: Philosopher;
 }
 
+.post-author {
+  font-family: Philosopher, serif;
+  color: #3F3F3F;
+  font-size: 1.1em;
+  text-align: center;  
+  margin-top: 10px;
+}
+
 .post-after {
   padding-left: 40px;
   margin-bottom: 12px;

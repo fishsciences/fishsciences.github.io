@@ -2,47 +2,47 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Practical Pisces</title>
-    <link>https://fishsciences.github.io/categories/</link>
+    <link>/categories/</link>
     <description>Recent content in Categories on Practical Pisces</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-	<atom:link href="https://fishsciences.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Fish</title>
-      <link>https://fishsciences.github.io/categories/fish/</link>
+      <link>/categories/fish/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://fishsciences.github.io/categories/fish/</guid>
+      <guid>/categories/fish/</guid>
       <description></description>
     </item>
     
     <item>
       <title>R</title>
-      <link>https://fishsciences.github.io/categories/r/</link>
+      <link>/categories/r/</link>
       <pubDate>Fri, 05 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://fishsciences.github.io/categories/r/</guid>
+      <guid>/categories/r/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Science</title>
-      <link>https://fishsciences.github.io/categories/science/</link>
+      <link>/categories/science/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://fishsciences.github.io/categories/science/</guid>
+      <guid>/categories/science/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Visualization</title>
-      <link>https://fishsciences.github.io/categories/visualization/</link>
+      <link>/categories/visualization/</link>
       <pubDate>Fri, 05 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://fishsciences.github.io/categories/visualization/</guid>
+      <guid>/categories/visualization/</guid>
       <description></description>
     </item>
     
