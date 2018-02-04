@@ -5,17 +5,17 @@
     <link>/</link>
     <language>en-us</language>
     <author>Alexander Ivanov</author>
-    <updated>2018-01-05 00:00:00 &#43;0000 UTC</updated>
+    <updated>2018-02-03 00:00:00 &#43;0000 UTC</updated>
     
     <item>
       <title>Visualizing Fish Encounter Histories</title>
       <link>/post/visualizing-fish-encounter-histories/</link>
-      <pubDate>Fri, 05 Jan 2018 00:00:00 UTC</pubDate>
+      <pubDate>Sat, 03 Feb 2018 00:00:00 UTC</pubDate>
       <author>Alexander Ivanov</author>
       <guid>/post/visualizing-fish-encounter-histories/</guid>
       <description>&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;div id=&#34;project-prep&#34; class=&#34;section level5&#34;&gt;
-&lt;h5&gt;Project Prep&lt;/h5&gt;
+&lt;div id=&#34;project-prep&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Project Prep&lt;/h4&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Packages you’ll need: &lt;code&gt;tidyverse&lt;/code&gt; (or individual components therein: &lt;code&gt;readr&lt;/code&gt;, &lt;code&gt;dplyr&lt;/code&gt;, &lt;code&gt;ggplot2&lt;/code&gt;). Suggested package(s): &lt;code&gt;extrafont&lt;/code&gt;, &lt;code&gt;hrbrthemes&lt;/code&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;

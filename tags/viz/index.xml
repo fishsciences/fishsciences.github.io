@@ -6,7 +6,7 @@
     <description>Recent content in Viz on Practical Pisces</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 05 Jan 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 03 Feb 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/viz/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>Visualizing Fish Encounter Histories</title>
       <link>/post/visualizing-fish-encounter-histories/</link>
-      <pubDate>Fri, 05 Jan 2018 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 03 Feb 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/visualizing-fish-encounter-histories/</guid>
       <description>Project Prep  Packages you’ll need: tidyverse (or individual components therein: readr, dplyr, ggplot2). Suggested package(s): extrafont, hrbrthemes.
