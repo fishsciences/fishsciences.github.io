@@ -19,7 +19,7 @@ knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 ```
 ## What is an encounter history?
 
-When working with acoustically-tagged fish, we often generate a record of each fish’s "encounters" with the autonomous acoustic monitors in an [underwater array](http://californiafishtracking.ucdavis.edu/region.shtml).  If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (`1`s) or failures (`0`s).  These encounter histories are simply the translation of a fish's path into a row of ones and zeros, each corresponding to a positive or negative detection record at a receiver location in the acoustic array.  
+When working with acoustically-tagged fish, we often generate a record of each fish’s "encounters" with the autonomous acoustic monitors in an [underwater array](http://californiafishtracking.ucdavis.edu/region.shtml).  If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (1s) or failures (0s).  These encounter histories are simply the translation of a fish's path into a row of 1s and 0s, each corresponding to a positive or negative detection record at a receiver location in the acoustic array.  
 
 An encounter history data frame might look like this:
 
@@ -45,18 +45,18 @@ d <- structure(list(TagID = c(4842L, 4843L, 4844L, 4845L, 4847L, 4848L,
 d[1:10,]
 ```
 
-Where each row represents a different tagged fish, and each column represents a different monitor location ("`Station`"), ordered from the most upstream (the "`Release`" station) to the most downstream (in this case, station "`MAW`").   A "`1`" indicates a successful detection for that fish at that station, and a "`0`" represents a lack of detection.  
+Where each row represents a different tagged fish, and each column represents a different monitor location ("`station`"), ordered from the most upstream (the "`Release`" station) to the most downstream (in this case, Station "`MAW`").  A "`1`" indicates a successful detection for that fish at that station, and a "`0`" represents a lack of detection.  
 
-A typical pattern of encounter histories for outmigrating juvenile fish is to see the detection rate decline as they migrate downstream and succumb to predation or other mortality factors.  However, some fish will miss one monitor upstream only to be detected at one or more monitors downstream.  These missed monitors (which look like zeros or NAs in the dataset) are just as important as the hit monitors, and we want to include them in our visualizations.
+A typical pattern of encounter histories for outmigrating juvenile fish is to see the detection rate decline as they migrate downstream and succumb to predation or other mortality factors.  However, some fish will miss one monitor upstream only to be detected at one or more monitors downstream.  These missed monitors (which look like 0s or NAs in the dataset) are just as important as the hit monitors, and we want to include them in our visualizations.
 
 
 ## Prepping the data for visualization
 
-The following code will allow you to download the [tidied](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) sample data and visualize it with `ggplot2`, provided you have all the packages listed below installed.  
+The following code will allow you to download the [tidied](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html) sample data and visualize it with ggplot2, provided you have all the packages listed below installed.  
 
 
 
-```{r, echo=TRUE, eval=TRUE}
+```{r, echo=TRUE, eval=FALSE}
 library(tidyverse)
 
 # download sample data; adjust destfile filepath as necessary.
@@ -79,12 +79,12 @@ library(tidyverse)
 
 The data frame `d` now has TagID and Station (monitor) as columns, and the `1`/`0` detection indicator as the `value` column.
 
-First, it's easier to work with both the `TagID`s and monitors if they're ordered factors (remember, the `Station` order matters, because we want to see the fish go from upstream to downstream):
+First, it's easier to work with both the `TagID`s and monitors if they're ordered factors (remember, the order of the `Station`s matter, because we want to see the fish go from upstream to downstream):
 
 ```{r}
 encounters <- mutate(d,
                      TagID = factor(TagID),
-                     Station = factor(Station, levels = unique(d$Station)))
+                     Monitor = factor(Station, levels = unique(d$Station)))
 ```
 
 ## Quick-and-dirty initial visualization 
@@ -94,19 +94,17 @@ When starting out with a new dataset, it's always good to see what we're working
 ```{r}
 ggplot(encounters) +
   geom_path(
-    aes(x = Station, y = factor(value), group = TagID, color = TagID), 
+    aes(x = Monitor, y = factor(value), group = TagID, color = TagID), 
     show.legend = FALSE
   ) +
   facet_wrap(~TagID, scales = "free_x")
 ```
 
-Ignoring the messy axes, we can see that some fish are always detected, some fish are only detected once or twice, and one fish (`4850`) is missed at one receiver but picked up again downstream.  The challenge with this dataset is that we're not interested in the `0`/`1` values in a numeric sense...which means it's a waste of the y axis to use them there.  
-
-What we're interested in is the overall detection trends of the data, especially the "holes" --- the zeros for individual fish.  It would be much better if each fish could be its own row on the y axis.  This would be especially useful for identifying a particular monitor that isn't detecting fish very well --- that monitor may need servicing, or perhaps should be moved to a better spot on the river.
+Ignoring the messy axes, we can see that some fish are always detected, some fish are only detected once or twice, and one fish (`4850`) is missed at one receiver but picked up again downstream.  The challenge with this dataset is that we're not interested in the `0`/`1` values in a numeric sense...which means it's a waste of the y axis to use them there.  What we're interested in is the overall detection trends of the data, especially the "holes" --- the zeros for individual fish.  It would be much better if each fish could be its own row on the y axis.  This would be especially useful for identifying a particular monitor that isn't detecting fish very well --- that monitor may need servicing, or perhaps should be moved to a better spot on the river.
 
 ## Getting fish together on the same plot
 
-We want to code each fish's detections as belonging to its own, *ordered* group of encounters, so that `geom_path()` can plot them separately.  We also want to keep any zeros that exist in the middle of a fish's encounter history.  A handy way to do this in R is to write a custom function that works on a single fish path, and then apply that function to the full data frame of all fishpaths.  The function below takes a single fish's encounter history rows and applies a unique, identifying character string to them:
+We want to code each fish's detections as belonging to its own, *ordered* group of encounters, so that `geom_path()` can plot them separately.  We also want to keep the zeros in the middle of a fish's encounter history.  A handy way to do this in R is to write a custom function that works on a single fish path, and then apply that function to the full data frame of all fishpaths.  The function below takes a single fish's encounter history rows and applies a unique, identifying character string to them:
 
 
 ```{r}
@@ -117,15 +115,13 @@ make_groups <- function(tag, val) {
   r <- rle(val) # where 'val' is the 0/1 column
   
 # for each contiguous group:
-#   apply flatten_chr() to the letter corresponding to the ith value of the 
-#   lengths column in r
+#   apply flatten_chr() to the letter corresponding to the ith value of the lengths column in r
   
   flatten_chr(map(1:length(r$lengths), function(i) { 
     rep(LETTERS[i], r$lengths[i])
   })) -> grps # save as new object
   
-  sprintf("%s.%s", tag, grps) # concatenate the tag and the letter values 
-# into a single string.
+  sprintf("%s.%s", tag, grps) # concatenate the tag and the letter values into a single string.
   
 }
 ```
@@ -151,7 +147,7 @@ If we tried to plot them now, with all the zeros still in the `value` column, it
 
 ```{r}
 encounters %>% 
-  ggplot(aes(x = Station, y = TagID)) +
+  ggplot(aes(x = Monitor, y = TagID)) +
   geom_path(aes(group = TagID), size = 0.25) +
   geom_point(shape = 18, size = 2) 
 ```
@@ -167,7 +163,7 @@ group_by(encounters, TagID) %>%
 &hellip;And, then, plot again.  This time, the `theme_ipsum()` from [hrbrmstr's](https://github.com/hrbrmstr) `hrbrthemes` package will take us a long way towards a great-looking plot right off the bat:
 
 ```{r}
-ggplot(encounters2, aes(x = Station, y = TagID)) +
+ggplot(encounters2, aes(x = Monitor, y = TagID)) +
   geom_path(aes(group = grp), size = 0.25) +
   geom_point(shape = 18, size = 2) +
   labs(title = "Encounter histories of 25 tagged Chinook salmon smolts",
@@ -188,7 +184,7 @@ Once you have the font installed and registered, you can call it onto your plot 
 ```{r, fig.height=10, fig.width=10}
 library(extrafont)
 
-ggplot(encounters2, aes(x = Station, y = TagID)) +
+ggplot(encounters2, aes(x = Monitor, y = TagID)) +
   geom_path(aes(group = grp), size = 0.25) +
   geom_text(label= "X", size=9, vjust=0.6, family= "LEFISH") +
   labs(title = "Encounter histories of 25 tagged Chinook salmon smolts",
