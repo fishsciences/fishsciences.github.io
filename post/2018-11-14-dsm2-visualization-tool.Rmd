@@ -1,17 +1,14 @@
 ---
-title: DSM2 Visualization Tool
-author: Travis Hinkelman
+title: "DSM2 HYDRO Visualization Tool"
+author: "Travis Hinkelman"
 date: '2018-11-16'
+editor_options:
+  chunk_output_type: console
 slug: DSM2-Viz-Tool
 categories:
-  - visualization
-  - R
-  - Shiny
-editor_options: 
-  chunk_output_type: console
-# output:
-#   html_document:
-#     keep_md: true
+- visualization
+- R
+- Shiny
 ---
 ```{r include=FALSE}
 # this is just a convenience for future reference to nuke these up front vs
