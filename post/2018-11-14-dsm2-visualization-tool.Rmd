@@ -29,7 +29,7 @@ In the rest of this post, I will mostly focus on how I used Electron to package 
 
 ### File formats
 
-DSM2 produces output in two file formats: [HEC-DSS](http://www.hec.usace.army.mil/software/hec-dss/) and [HDF5](https://portal.hdfgroup.org/display/HDF5/HDF5). The HEC-DSS format is the older and more commonly used format, but the R package ([DSS-Rip](https://github.com/eheisman/dssrip)) for working with HEC-DSS files only works with 32-bit R on a Windows machine. The R packages ([hdf5r](https://github.com/hhoeflin/hdf5r) and [rhdf5](https://bioconductor.org/packages/release/bioc/html/rhdf5.html)) for working with HDF5 files don't have the same constraints as DSS-Rip. We chose to use `rhdf5` for the DSM2 Viz Tool because the HDF5 libaries are provided as an R package ([Rhdf5lib](https://bioconductor.org/packages/release/bioc/html/Rhdf5lib.html)) rather than requiring installation.  
+DSM2 produces output in two file formats: [HEC-DSS](http://www.hec.usace.army.mil/software/hec-dss/) and [HDF5](https://portal.hdfgroup.org/display/HDF5/HDF5). The HEC-DSS format is the older and more commonly used format, but the R package ([DSS-Rip](https://github.com/eheisman/dssrip)) for working with HEC-DSS files only works with 32-bit R on a Windows machine. The R packages ([hdf5r](https://github.com/hhoeflin/hdf5r) and [rhdf5](https://bioconductor.org/packages/release/bioc/html/rhdf5.html)) for working with HDF5 files don't have the same constraints as DSS-Rip. We chose to use rhdf5 for the DSM2 Viz Tool because the HDF5 libaries are provided as an R package ([Rhdf5lib](https://bioconductor.org/packages/release/bioc/html/Rhdf5lib.html)) rather than requiring installation.  
 
 ## R Shiny Electron Build Process
 
@@ -47,7 +47,7 @@ Then run this command to install Electron Forge globally.
 ```
 npm install -g electron-forge
 ```
-Next, clone or download GitHub repository for the RSE template.
+Next, clone or download the GitHub repository for the RSE template.
 
 ### Build process on Mac
 
