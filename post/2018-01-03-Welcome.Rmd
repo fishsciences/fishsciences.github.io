@@ -18,9 +18,9 @@ knitr::opts_chunk$set(collapse = TRUE)
 
 # Well hello!
 
-Welcome to the Cramer Fish Sciences data science blog, the product of a handful of nerds at [Cramer Fish Sciences](https://fishsciences.net).  We're here to share things about fish, fish science, coding, data visualization, and statistics.
+Welcome to the Cramer Fish Sciences data science blog, the product of a handful of nerds at [Cramer Fish Sciences](http://www.fishsciences.net).  We're here to share things about fish, fish science, coding, data visualization, and statistics.
 
-[Myfanwy](https://myfanwy.github.io) will be the one who can't stop talking about fishy viz (visualization of fish data).  [Travis](http://www.fishsciences.net/travis-hinkelman-ph-d/) likes to think and write about simulation models and R workflows for fish sciences.  [Kevin](https://www.linkedin.com/in/kevin-ceder-a7554338/) is actually a tree geek, but we let him talk about fish sometimes.  [Kai](http://www.fishsciences.net/kai-ross-ph-d/) knows the best way to do everything (he specializes in optimization modeling).
+[Myfanwy](https://myfanwy.github.io) will be the one who can't stop talking about fishy viz (visualization of fish data).  [Travis](http://www.fishsciences.net/travis-hinkelman-ph-d/) likes to think and write about simulation models and R workflows for fish sciences.  [Kevin](https://www.linkedin.com/in/kevin-ceder-a7554338/) is actually a tree geek, but we let him talk about fish sometimes ;-).  [Kai](http://www.fishsciences.net/kai-ross-ph-d/) knows the best way to do everything (he specializes in optimization modeling).
 
 
 Thanks for stopping by!

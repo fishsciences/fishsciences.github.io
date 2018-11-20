@@ -2,18 +2,107 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
       <title>Practical Pisces on Practical Pisces </title>
-    <link>/</link>
+    <link>https://fishsciences.github.io/</link>
     <language>en-us</language>
-    <author>Cramer Fish Sciences</author>
-    <updated>2018-02-03 00:00:00 &#43;0000 UTC</updated>
+    <author>Alexander Ivanov</author>
+    <updated>2018-11-16 00:00:00 &#43;0000 UTC</updated>
+    
+    <item>
+      <title>DSM2 HYDRO Visualization Tool</title>
+      <link>https://fishsciences.github.io/post/dsm2-viz-tool/</link>
+      <pubDate>Fri, 16 Nov 2018 00:00:00 UTC</pubDate>
+      <author>Alexander Ivanov</author>
+      <guid>https://fishsciences.github.io/post/dsm2-viz-tool/</guid>
+      <description>
+
+
+&lt;div id=&#34;background&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Background&lt;/h2&gt;
+&lt;p&gt;The &lt;a href=&#34;https://sacdeltaguide.atavist.com/&#34;&gt;Sacramento-San Joaquin Delta&lt;/a&gt; is an inland freshwater estuary subject to intensive management. The &lt;a href=&#34;http://baydeltaoffice.water.ca.gov/modeling/deltamodeling/models/dsm2/dsm2.cfm&#34;&gt;Delta Simulation Model II (DSM2)&lt;/a&gt; is one of the most commonly used hydrodynamic models for Delta planning and management with modules for hydrodynamics (HYDRO), water quality (QUAL), and particle tracking (PTM). The California Department of Water Resources uses DSM2 for planning and operation of the State Water Project (SWP) and Central Valley Project (CVP) diversion pumping as well as for management and satisfaction of stringent water quality standards. Despite the widespread use of DSM2, we are not aware of any tools for interactively visualizing DSM2 HYDRO output. An easy-to-use visualization tool expands the accessibility of DSM2 output beyond hydrodynamic modelers to include biologists, water managers, and water users.&lt;/p&gt;
+&lt;p&gt;Our initial work focused on visualizing the effects of inflow and exports on large-scale hydrodynamic patterns across numerous Delta channels. One of our motivating questions was how to identify the ‘footprint’ of diversion pumping at the SWP and CVP facilities. Those interests led us to an interactive, map-based approach where the map both displays large-scale patterns and allows for navigation among channels to display channel-level details. We used the &lt;a href=&#34;https://shiny.rstudio.com/&#34;&gt;Shiny&lt;/a&gt; web framework to build a &lt;a href=&#34;https://fishsciences.shinyapps.io/delta-hydrodynamics/&#34;&gt;Delta Hydrodynamics&lt;/a&gt; app that provides interactivity with our analysis of outputs from a set of DSM2 runs. The DSM2 HYDRO Visualization Tool (DSM2 Viz Tool) is a general tool that allows for uploading DSM2 output files to create the same visualizations used in the Delta Hydrodynamics app.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;dsm2-hydro-visualization-tool&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;DSM2 HYDRO Visualization Tool&lt;/h2&gt;
+&lt;p&gt;As alluded to above, we did not set out to build a general DSM2 visualization tool. Rather, we were following our usual workflow of using R to analyze data and Shiny to make our analysis interactive and accessible. The use of R and Shiny to make a general DSM2 visualization tool is arguably a case of &lt;a href=&#34;https://en.wikipedia.org/wiki/Law_of_the_instrument&#34;&gt;Maslow’s hammer&lt;/a&gt; because a web application is an unusual choice for a tool that involves interaction with the typically large files produced by DSM2. However, &lt;a href=&#34;https://electronjs.org/&#34;&gt;Electron&lt;/a&gt; allows us to turn our Shiny app into a standalone desktop application. I first heard about the possibility of using Electron with Shiny in this &lt;a href=&#34;https://www.youtube.com/watch?v=ARrbbviGvjc&#34;&gt;talk by Katie Sasso&lt;/a&gt;, but it wasn’t until I discovered the &lt;a href=&#34;https://github.com/dirkschumacher/r-shiny-electron&#34;&gt;R Shiny Electron (RSE) template&lt;/a&gt; that I decided to take the plunge.&lt;/p&gt;
+&lt;p&gt;In the rest of this post, I will mostly focus on how I used Electron to package a Shiny app as a desktop application. If you want to learn more about the DSM2 Viz Tool, you can &lt;a href=&#34;https://github.com/fishsciences/DSM2-Viz-Tool&#34;&gt;install it&lt;/a&gt; and play around with the example files. If you just want a quick peek at the core ideas, then take a look at the &lt;a href=&#34;https://fishsciences.shinyapps.io/delta-hydrodynamics/&#34;&gt;Delta Hydrodynamics app&lt;/a&gt;. We are currently working on a short manuscript that describes the DSM2 Viz Tool, which will become the natural starting point for learning about the tool.&lt;/p&gt;
+&lt;div id=&#34;file-formats&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;File formats&lt;/h3&gt;
+&lt;p&gt;DSM2 produces output in two file formats: &lt;a href=&#34;http://www.hec.usace.army.mil/software/hec-dss/&#34;&gt;HEC-DSS&lt;/a&gt; and &lt;a href=&#34;https://portal.hdfgroup.org/display/HDF5/HDF5&#34;&gt;HDF5&lt;/a&gt;. The HEC-DSS format is the older and more commonly used format, but the R package (&lt;a href=&#34;https://github.com/eheisman/dssrip&#34;&gt;DSS-Rip&lt;/a&gt;) for working with HEC-DSS files only works with 32-bit R on a Windows machine. The R packages (&lt;a href=&#34;https://github.com/hhoeflin/hdf5r&#34;&gt;hdf5r&lt;/a&gt; and &lt;a href=&#34;https://bioconductor.org/packages/release/bioc/html/rhdf5.html&#34;&gt;rhdf5&lt;/a&gt;) for working with HDF5 files don’t have the same constraints as DSS-Rip. We chose to use &lt;code&gt;rhdf5&lt;/code&gt; for the DSM2 Viz Tool because the HDF5 libaries are provided as an R package (&lt;a href=&#34;https://bioconductor.org/packages/release/bioc/html/Rhdf5lib.html&#34;&gt;Rhdf5lib&lt;/a&gt;) rather than requiring installation.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;r-shiny-electron-build-process&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;R Shiny Electron Build Process&lt;/h2&gt;
+&lt;p&gt;The &lt;a href=&#34;https://github.com/dirkschumacher/r-shiny-electron&#34;&gt;R Shiny Electron (RSE) template&lt;/a&gt; includes only very basic instructions for how to get started with this process (and they clearly specify that it is not ready for production). There were considerable gaps in my understanding that left me flailing while trying to get things to work (especially on Windows). Below I am describing what I did to get up and running but I make no argument that this process represents best practices.&lt;/p&gt;
+&lt;div id=&#34;basic-setup&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Basic setup&lt;/h3&gt;
+&lt;p&gt;The RSE template doesn’t mention anything about the arguably obvious steps of installing &lt;a href=&#34;https://nodejs.org/&#34;&gt;Node&lt;/a&gt;, &lt;a href=&#34;https://electronjs.org/&#34;&gt;Electron&lt;/a&gt;, and &lt;a href=&#34;https://electronforge.io/&#34;&gt;Electron Forge&lt;/a&gt;. Node can be installed with pre-built installers from the Node website. After installing Node, Electron and Electron Forge are installed using &lt;code&gt;npm&lt;/code&gt; from the command line. On Windows, Node installs a Node.js command prompt that I used for any &lt;code&gt;npm&lt;/code&gt; and &lt;code&gt;electron-forge&lt;/code&gt; commands (rather than the default Windows command prompt).&lt;/p&gt;
+&lt;p&gt;Run the following command to install Electron globally.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm install -g electron&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then run this command to install Electron Forge globally.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm install -g electron-forge&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next, clone or download GitHub repository for the RSE template.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;build-process-on-mac&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Build process on Mac&lt;/h3&gt;
+&lt;p&gt;The RSE template repository includes a simple Shiny app. As a first step, I recommend following the steps below to confirm that you can build the executable with the simple app before trying your own app. At the end of this post, I will write more about extra steps required to build the executable for the DSM2 Viz Tool.&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Open the terminal and change the directory to the location of &lt;code&gt;r-shiny-electron&lt;/code&gt; or &lt;code&gt;r-shiny-electron-master&lt;/code&gt; (see &lt;a href=&#34;https://macpaw.com/how-to/use-terminal-on-mac&#34;&gt;how to use terminal&lt;/a&gt;).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Run &lt;code&gt;npm install&lt;/code&gt; in the terminal to set up the project in the &lt;code&gt;r-shiny-electron&lt;/code&gt; directory.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;You will get lots of warnings about outdated packages. I played around a bit with trying to update dependencies but was quickly out of my depths and broke the RSE template (but easy enough to start over).&lt;/p&gt;
+&lt;ol start=&#34;3&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Download R binary for Mac by running &lt;code&gt;./get-r-mac.sh&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Identify and download packages used in Shiny app by running &lt;code&gt;Rscript add-cran-binary-pkgs.R&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Run &lt;code&gt;npm start&lt;/code&gt; to test if app launches (and works correctly).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;If the app works correctly, run &lt;code&gt;electron-forge make&lt;/code&gt; to build the Mac executable.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The build process will create a folder called &lt;code&gt;Out&lt;/code&gt; in the &lt;code&gt;r-shiny-electron&lt;/code&gt; directory. In &lt;code&gt;Out/r-shiny-electron-darwin-x64&lt;/code&gt;, you will have an executable (&lt;code&gt;r-shiny-electron.app&lt;/code&gt;) that you can run to test that the app is working correctly. In &lt;code&gt;Out/make&lt;/code&gt;, you will have a zip file that contains the executable but is better for distributing because of the smaller file size.&lt;/p&gt;
+&lt;p&gt;It is possible to &lt;a href=&#34;https://github.com/dirkschumacher/r-shiny-electron/issues/25&#34;&gt;build a Windows installer on a Mac&lt;/a&gt;, but it “takes forever.” I tried going down this road, but bailed after the process had run for 2 hours without finishing because I had access to a Windows machine for building the app.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;build-process-on-windows&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Build process on Windows&lt;/h3&gt;
+&lt;p&gt;If you haven’t picked up on it yet, I’m a Mac user. I struggled to figure out how to get set up on a Windows machine and I might not be remembering correctly a few of the details. Hopefully, these instructions are close enough to help you figure it out for yourself.&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Install &lt;a href=&#34;https://cygwin.com/&#34;&gt;Cygwin&lt;/a&gt; and the &lt;a href=&#34;https://superuser.com/questions/693284/wget-command-not-working-in-cygwin&#34;&gt;wget package&lt;/a&gt;, which is not installed by default.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The &lt;code&gt;wget&lt;/code&gt; function is used in &lt;code&gt;./get-r-win.sh&lt;/code&gt;. If you have &lt;code&gt;wget&lt;/code&gt; from another installation process, then you might be able to skip this step. The Cygwin installer asks if you want to install &lt;a href=&#34;https://chocolatey.org/&#34;&gt;Chocolatey&lt;/a&gt;. It is not necessary to install Chocolatey, but it helped me figure out one piece below (which might be obvious to Windows users). If you didn’t install Chocolately as part of the Cygwin installation, you can download an installer from the Chocolatey website.&lt;/p&gt;
+&lt;ol start=&#34;2&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Install &lt;code&gt;innoextract&lt;/code&gt; with Chocolatey by running &lt;code&gt;choco install innoextract&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;As it turns out, the Chocolatey version of &lt;code&gt;innoextract&lt;/code&gt; (for unpacking installers created by Inno Setup) will not work with the R installer. We need the development version: &lt;a href=&#34;http://constexpr.org/innoextract/files/snapshots/innoextract-1.8-dev-2018-09-09/&#34;&gt;innoextract-1.8-dev-2018-09-09-windows.zip&lt;/a&gt;. After extracting the development version of &lt;code&gt;innoextract&lt;/code&gt; from the zip file, you can move it to &lt;a href=&#34;https://chocolatey.org/faq#where-does-chocolatey-install-by-default&#34;&gt;where Chocolatey installs packages&lt;/a&gt;. The main point of Chocolatey for me was that it made it easy to find the location of &lt;code&gt;innoextract&lt;/code&gt; (and &lt;code&gt;./get-r-win.sh&lt;/code&gt; found it, too).&lt;/p&gt;
+&lt;ol start=&#34;3&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Open the Node.js command prompt and change the directory to the location of &lt;code&gt;r-shiny-electron&lt;/code&gt; or &lt;code&gt;r-shiny-electron-master&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Run &lt;code&gt;npm install&lt;/code&gt; in the Node.js command prompt to set up the project in the &lt;code&gt;r-shiny-electron&lt;/code&gt; directory.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Download R binary for Windows by running &lt;code&gt;./get-r-win.sh&lt;/code&gt; in the Cygwin Terminal.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Identify and download packages used in Shiny app by running &lt;code&gt;Rscript add-cran-binary-pkgs.R&lt;/code&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I unsuccessfully tried to run this line in the default command prompt, the Node.js command prompt, and the Cygwin Terminal. I don’t know what I was missing to make that work and I didn’t try very hard because I was able to successfully run this line in the &lt;a href=&#34;https://support.rstudio.com/hc/en-us/articles/115010737148-Using-the-RStudio-Terminal&#34;&gt;RStudio Terminal&lt;/a&gt;. Remember to change the directory to &lt;code&gt;r-shiny-electron&lt;/code&gt;.&lt;/p&gt;
+&lt;ol start=&#34;7&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Run &lt;code&gt;npm start&lt;/code&gt; in the Node.js command prompt to test if the app launches (and works correctly).&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;If the app works correctly, run &lt;code&gt;electron-forge make&lt;/code&gt; in the Node.js command prompt to build the Windows executable.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The build process will create a folder called &lt;code&gt;Out&lt;/code&gt; in the &lt;code&gt;r-shiny-electron&lt;/code&gt; directory. In &lt;code&gt;Out/make/squirrel.windows/x64&lt;/code&gt;, you will have an installer executable called &lt;code&gt;r-shiny-electron-1.0.0 Setup.exe&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;customizing-build-process-for-dsm2-viz-tool&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Customizing build process for DSM2 Viz Tool&lt;/h3&gt;
+&lt;p&gt;After working through the build process on the r-shiny-electron example app, I downloaded a fresh version of the RSE template, renamed the &lt;code&gt;r-shiny-electron&lt;/code&gt; directory to &lt;code&gt;DSM2-Viz-Tool&lt;/code&gt;, removed the &lt;code&gt;app.R&lt;/code&gt; file from &lt;code&gt;DSM2-Viz-Tool/shiny&lt;/code&gt;, and replaced it with the files for the &lt;a href=&#34;https://github.com/fishsciences/DSM2-Viz-Tool/tree/master/shiny&#34;&gt;DSM2 Viz Tool Shiny app&lt;/a&gt;. I also opened &lt;code&gt;package.json&lt;/code&gt; in a text editor and changed a &lt;a href=&#34;https://github.com/fishsciences/DSM2-Viz-Tool/blob/master/package.json&#34;&gt;few fields&lt;/a&gt; (e.g., name, productName, version, description, author).&lt;/p&gt;
+&lt;p&gt;Next, I started working through the build process described above. However, before running &lt;code&gt;npm start&lt;/code&gt; I needed to add the binary files for the &lt;code&gt;rhdf5&lt;/code&gt; and &lt;code&gt;Rhdf5lib&lt;/code&gt; packages because &lt;code&gt;Rscript add-cran-binary-pkgs.R&lt;/code&gt; doesn’t find Bioconductor packages. The binary files for Mac and Windows are available at the package websites (linked above) and need to be placed in &lt;a href=&#34;https://github.com/fishsciences/DSM2-Viz-Tool/tree/master/r-mac/library&#34;&gt;&lt;code&gt;DSM2-Viz-Tool/r-mac/library&lt;/code&gt;&lt;/a&gt; and &lt;a href=&#34;https://github.com/fishsciences/DSM2-Viz-Tool/tree/master/r-win/library&#34;&gt;&lt;code&gt;DSM2-Viz-Tool/r-win/library&lt;/code&gt;&lt;/a&gt;, respectively. Then, I was able to finish the build process.&lt;/p&gt;
+&lt;p&gt;Working through this process involved plenty of frustration (because of my knowledge gaps), but it was extremely satisfying to arrive at the end goal of packaging the DSM2 Viz Tool as a standalone desktop application.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Visualizing Fish Encounter Histories</title>
-      <link>/post/visualizing-fish-encounter-histories/</link>
+      <link>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</link>
       <pubDate>Sat, 03 Feb 2018 00:00:00 UTC</pubDate>
       <author>Alexander Ivanov</author>
-      <guid>/post/visualizing-fish-encounter-histories/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+      <guid>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</guid>
+      <description>
+
+
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;project-prep&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Project Prep&lt;/h4&gt;
 &lt;blockquote&gt;
@@ -53,20 +142,6 @@ if (!file.exists(&amp;quot;fishdata.csv&amp;quot;)) {
 }
 
 (d &amp;lt;- read_csv(&amp;quot;fishdata.csv&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## # A tibble: 209 x 3
-##    TagID Station value
-##    &amp;lt;int&amp;gt; &amp;lt;chr&amp;gt;   &amp;lt;int&amp;gt;
-##  1  4842 Release     1
-##  2  4843 Release     1
-##  3  4844 Release     1
-##  4  4845 Release     1
-##  5  4847 Release     1
-##  6  4848 Release     1
-##  7  4849 Release     1
-##  8  4850 Release     1
-##  9  4851 Release     1
-## 10  4854 Release     1
-## # ... with 199 more rows&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;The data frame &lt;code&gt;d&lt;/code&gt; now has TagID and Station (monitor) as columns, and the &lt;code&gt;1&lt;/code&gt;/&lt;code&gt;0&lt;/code&gt; detection indicator as the &lt;code&gt;value&lt;/code&gt; column.&lt;/p&gt;
 &lt;p&gt;First, it’s easier to work with both the &lt;code&gt;TagID&lt;/code&gt;s and monitors if they’re ordered factors (remember, the &lt;code&gt;Station&lt;/code&gt; order matters, because we want to see the fish go from upstream to downstream):&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;encounters &amp;lt;- mutate(d,
@@ -82,7 +157,7 @@ if (!file.exists(&amp;quot;fishdata.csv&amp;quot;)) {
     show.legend = FALSE
   ) +
   facet_wrap(~TagID, scales = &amp;quot;free_x&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Ignoring the messy axes, we can see that some fish are always detected, some fish are only detected once or twice, and one fish (&lt;code&gt;4850&lt;/code&gt;) is missed at one receiver but picked up again downstream. The challenge with this dataset is that we’re not interested in the &lt;code&gt;0&lt;/code&gt;/&lt;code&gt;1&lt;/code&gt; values in a numeric sense…which means it’s a waste of the y axis to use them there.&lt;/p&gt;
 &lt;p&gt;What we’re interested in is the overall detection trends of the data, especially the “holes” — the zeros for individual fish. It would be much better if each fish could be its own row on the y axis. This would be especially useful for identifying a particular monitor that isn’t detecting fish very well — that monitor may need servicing, or perhaps should be moved to a better spot on the river.&lt;/p&gt;
 &lt;/div&gt;
@@ -99,7 +174,7 @@ make_groups &amp;lt;- function(tag, val) {
 #   apply flatten_chr() to the letter corresponding to the ith value of the 
 #   lengths column in r
   
-  flatten_chr(map(1:length(r$lengths), function(i) { 
+  purrr::flatten_chr(purrr::map(1:length(r$lengths), function(i) { 
     rep(LETTERS[i], r$lengths[i])
   })) -&amp;gt; grps # save as new object
   
@@ -137,7 +212,7 @@ make_groups &amp;lt;- function(tag, val) {
   ggplot(aes(x = Station, y = TagID)) +
   geom_path(aes(group = TagID), size = 0.25) +
   geom_point(shape = 18, size = 2) &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Closer than our initial plot, but R is recognizing the zeros as points on the plot, when really what we want to view is the &lt;em&gt;absence&lt;/em&gt; of those points. Let’s filter out the 0s:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_by(encounters, TagID) %&amp;gt;% 
   filter(value != 0) %&amp;gt;%  
@@ -149,7 +224,7 @@ make_groups &amp;lt;- function(tag, val) {
   labs(title = &amp;quot;Encounter histories of 25 tagged Chinook salmon smolts&amp;quot;,
        subtitle = &amp;quot;Upstream to downstream&amp;quot;) +
   hrbrthemes::theme_ipsum()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Yay! Now we can see where each fish &lt;em&gt;stopped&lt;/em&gt; getting detected along the river, and continuous detections are strung together visually. Much more helpful.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;adding-the-fun-factor&#34; class=&#34;section level2&#34;&gt;
@@ -164,7 +239,7 @@ ggplot(encounters2, aes(x = Station, y = TagID)) +
   labs(title = &amp;quot;Encounter histories of 25 tagged Chinook salmon smolts&amp;quot;,
        subtitle = &amp;quot;Upstream to downstream&amp;quot;) +
   hrbrthemes::theme_ipsum()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Hope this was helpful!&lt;/p&gt;
 &lt;/div&gt;
 </description>
@@ -172,11 +247,14 @@ ggplot(encounters2, aes(x = Station, y = TagID)) +
     
     <item>
       <title>Welcome to the Practical Pisces (a blog mostly about fish and science)</title>
-      <link>/post/2018-01-03-welcome/</link>
+      <link>https://fishsciences.github.io/post/2018-01-03-welcome/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 UTC</pubDate>
       <author>Alexander Ivanov</author>
-      <guid>/post/2018-01-03-welcome/</guid>
-      <description>&lt;div id=&#34;well-hello&#34; class=&#34;section level1&#34;&gt;
+      <guid>https://fishsciences.github.io/post/2018-01-03-welcome/</guid>
+      <description>
+
+
+&lt;div id=&#34;well-hello&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Well hello!&lt;/h1&gt;
 &lt;p&gt;Welcome to the Cramer Fish Sciences data science blog, the product of a handful of nerds at &lt;a href=&#34;https://fishsciences.net&#34;&gt;Cramer Fish Sciences&lt;/a&gt;. We’re here to share things about fish, fish science, coding, data visualization, and statistics.&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://myfanwy.github.io&#34;&gt;Myfanwy&lt;/a&gt; will be the one who can’t stop talking about fishy viz (visualization of fish data). &lt;a href=&#34;http://www.fishsciences.net/travis-hinkelman-ph-d/&#34;&gt;Travis&lt;/a&gt; likes to think and write about simulation models and R workflows for fish sciences. &lt;a href=&#34;https://www.linkedin.com/in/kevin-ceder-a7554338/&#34;&gt;Kevin&lt;/a&gt; is actually a tree geek, but we let him talk about fish sometimes. &lt;a href=&#34;http://www.fishsciences.net/kai-ross-ph-d/&#34;&gt;Kai&lt;/a&gt; knows the best way to do everything (he specializes in optimization modeling).&lt;/p&gt;

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Shiny on Practical Pisces</title>
+    <link>https://fishsciences.github.io/categories/shiny/</link>
+    <description>Recent content in Shiny on Practical Pisces</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 16 Nov 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://fishsciences.github.io/categories/shiny/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>DSM2 HYDRO Visualization Tool</title>
+      <link>https://fishsciences.github.io/post/dsm2-viz-tool/</link>
+      <pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://fishsciences.github.io/post/dsm2-viz-tool/</guid>
+      <description>Background The Sacramento-San Joaquin Delta is an inland freshwater estuary subject to intensive management. The Delta Simulation Model II (DSM2) is one of the most commonly used hydrodynamic models for Delta planning and management with modules for hydrodynamics (HYDRO), water quality (QUAL), and particle tracking (PTM). The California Department of Water Resources uses DSM2 for planning and operation of the State Water Project (SWP) and Central Valley Project (CVP) diversion pumping as well as for management and satisfaction of stringent water quality standards.</description>
+    </item>
+    
+  </channel>
+</rss>

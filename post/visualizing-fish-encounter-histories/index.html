@@ -1,8 +1,8 @@
 	
 	<!doctype html>
 <html lang="en">
-  <head>    
-    <title>Practical Pisces - Visualizing Fish Encounter Histories</title>
+  <head>
+    <title>ALEXFINN - Visualizing Fish Encounter Histories</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 
@@ -11,20 +11,20 @@
     <link href="/css/milk-responsive.min.css" rel="stylesheet">     
     <link href="/css/style.css" rel="stylesheet" type="text/css" media="all">
     <link href="/css/fonts.css" rel="stylesheet" type="text/css" media="all">
-    <link rel="shortcut icon" href="/images/logo2.ico"> 
+    <link rel="shortcut icon" href="/images/alexfinn.ico">
     <link rel="apple-touch-icon" href="">
-    <link rel="canonical" href="/post/visualizing-fish-encounter-histories/">
+    <link rel="canonical" href="https://fishsciences.github.io/post/visualizing-fish-encounter-histories/">
 
     
-    <link href="/rss.xml" type="application/atom+xml" rel="alternate" title="Practical Pisces">    
+    <link href="/rss.xml" type="application/atom+xml" rel="alternate" title="Practical Pisces">
 
   </head>
-  <body>    
-    <div class="navbar navbar-fixed-top">        
+  <body>
+    <div class="navbar navbar-fixed-top">
   <div id="navbar-inner">
-          <div id="logo">
-            <a href="https://fishsciences.github.io"><img src="/images/logo2.png" width="100px" hspace="5px" vspace="25px"></img></a>
-          </div>
+    <div id="logo">
+       <a href=""><img src="/images/letter-a.png" width="100px"></img></a>
+    </div>
   </div>
 </div>
 
@@ -34,27 +34,29 @@
     <div class="row-fluid">
       <div class="span12">
         <div class="posts">
-      
+
 
 	    
 	  <div class="post">
 	    <header class="post-header">
 	        <h1><a href="/post/visualizing-fish-encounter-histories/">Visualizing Fish Encounter Histories</a></h1>
-	        <div class="post-author">Myfanwy Johnston &amp; Bob Rudis</div>
 	        <div class="post-time">February 3 2018</div>
 	    </header>
 	    <div class="post-after">
 	        <div class="tags">
 	            
-	                <a href="//tags/viz">viz</a>              
+	                <a href="https://fishsciences.github.io/tags/viz">viz</a>
 	            
-	                <a href="//tags/ggplot2">ggplot2</a>              
+	                <a href="https://fishsciences.github.io/tags/ggplot2">ggplot2</a>
 	            
 	        </div>
 	    </div>
 	    <hr>
 	    <div class="post content">
-	        <p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+	        
+
+
+<p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <div id="project-prep" class="section level4">
 <h4>Project Prep</h4>
 <blockquote>
@@ -94,20 +96,6 @@ if (!file.exists(&quot;fishdata.csv&quot;)) {
 }
 
 (d &lt;- read_csv(&quot;fishdata.csv&quot;))</code></pre>
-<pre><code>## # A tibble: 209 x 3
-##    TagID Station value
-##    &lt;int&gt; &lt;chr&gt;   &lt;int&gt;
-##  1  4842 Release     1
-##  2  4843 Release     1
-##  3  4844 Release     1
-##  4  4845 Release     1
-##  5  4847 Release     1
-##  6  4848 Release     1
-##  7  4849 Release     1
-##  8  4850 Release     1
-##  9  4851 Release     1
-## 10  4854 Release     1
-## # ... with 199 more rows</code></pre>
 <p>The data frame <code>d</code> now has TagID and Station (monitor) as columns, and the <code>1</code>/<code>0</code> detection indicator as the <code>value</code> column.</p>
 <p>First, it’s easier to work with both the <code>TagID</code>s and monitors if they’re ordered factors (remember, the <code>Station</code> order matters, because we want to see the fish go from upstream to downstream):</p>
 <pre class="r"><code>encounters &lt;- mutate(d,
@@ -140,7 +128,7 @@ make_groups &lt;- function(tag, val) {
 #   apply flatten_chr() to the letter corresponding to the ith value of the 
 #   lengths column in r
   
-  flatten_chr(map(1:length(r$lengths), function(i) { 
+  purrr::flatten_chr(purrr::map(1:length(r$lengths), function(i) { 
     rep(LETTERS[i], r$lengths[i])
   })) -&gt; grps # save as new object
   
@@ -217,16 +205,16 @@ ggplot(encounters2, aes(x = Station, y = TagID)) +
     </p>
 </div>
 		<nav id="pagination">
-			
-			<a class="next" href="/post/2018-01-03-welcome/">Next</a>
+			<a class="prev" href="https://fishsciences.github.io/post/dsm2-viz-tool/">Prev</a>
+			<a class="next" href="https://fishsciences.github.io/post/2018-01-03-welcome/">Next</a>
 		</nav>
 	
 		        <footer>
-		        	Built with <a href="https://github.com/spf13/hugo">Hugo</a> and <a href="https://github.com/rstudio/blogdown">Blogdown</a> 
-		        	<p>Based on simple-a theme by Alex Finn</p>
+		        	Built with <a href="https://github.com/spf13/hugo">Hugo</a>
+		        	<p>© Alexander Feller 2018</p>
 		        </footer>
 		    </div>
-		  </div>    
+		  </div>
 		</div>
       </div>
     </div>
