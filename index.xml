@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
       <title>Practical Pisces on Practical Pisces </title>
-    <link>https://fishsciences.github.io/</link>
+    <link>/</link>
     <language>en-us</language>
     <author>Alexander Ivanov</author>
     <updated>2018-11-16 00:00:00 &#43;0000 UTC</updated>
     
     <item>
       <title>DSM2 HYDRO Visualization Tool</title>
-      <link>https://fishsciences.github.io/post/dsm2-viz-tool/</link>
+      <link>/post/dsm2-viz-tool/</link>
       <pubDate>Fri, 16 Nov 2018 00:00:00 UTC</pubDate>
       <author>Alexander Ivanov</author>
-      <guid>https://fishsciences.github.io/post/dsm2-viz-tool/</guid>
+      <guid>/post/dsm2-viz-tool/</guid>
       <description>
 
 
@@ -95,14 +95,14 @@
     
     <item>
       <title>Visualizing Fish Encounter Histories</title>
-      <link>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</link>
+      <link>/post/visualizing-fish-encounter-histories/</link>
       <pubDate>Sat, 03 Feb 2018 00:00:00 UTC</pubDate>
       <author>Alexander Ivanov</author>
-      <guid>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</guid>
+      <guid>/post/visualizing-fish-encounter-histories/</guid>
       <description>
 
 
-&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;project-prep&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Project Prep&lt;/h4&gt;
 &lt;blockquote&gt;
@@ -157,7 +157,7 @@ if (!file.exists(&amp;quot;fishdata.csv&amp;quot;)) {
     show.legend = FALSE
   ) +
   facet_wrap(~TagID, scales = &amp;quot;free_x&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Ignoring the messy axes, we can see that some fish are always detected, some fish are only detected once or twice, and one fish (&lt;code&gt;4850&lt;/code&gt;) is missed at one receiver but picked up again downstream. The challenge with this dataset is that we’re not interested in the &lt;code&gt;0&lt;/code&gt;/&lt;code&gt;1&lt;/code&gt; values in a numeric sense…which means it’s a waste of the y axis to use them there.&lt;/p&gt;
 &lt;p&gt;What we’re interested in is the overall detection trends of the data, especially the “holes” — the zeros for individual fish. It would be much better if each fish could be its own row on the y axis. This would be especially useful for identifying a particular monitor that isn’t detecting fish very well — that monitor may need servicing, or perhaps should be moved to a better spot on the river.&lt;/p&gt;
 &lt;/div&gt;
@@ -212,7 +212,7 @@ make_groups &amp;lt;- function(tag, val) {
   ggplot(aes(x = Station, y = TagID)) +
   geom_path(aes(group = TagID), size = 0.25) +
   geom_point(shape = 18, size = 2) &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Closer than our initial plot, but R is recognizing the zeros as points on the plot, when really what we want to view is the &lt;em&gt;absence&lt;/em&gt; of those points. Let’s filter out the 0s:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_by(encounters, TagID) %&amp;gt;% 
   filter(value != 0) %&amp;gt;%  
@@ -224,7 +224,7 @@ make_groups &amp;lt;- function(tag, val) {
   labs(title = &amp;quot;Encounter histories of 25 tagged Chinook salmon smolts&amp;quot;,
        subtitle = &amp;quot;Upstream to downstream&amp;quot;) +
   hrbrthemes::theme_ipsum()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Yay! Now we can see where each fish &lt;em&gt;stopped&lt;/em&gt; getting detected along the river, and continuous detections are strung together visually. Much more helpful.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;adding-the-fun-factor&#34; class=&#34;section level2&#34;&gt;
@@ -239,7 +239,7 @@ ggplot(encounters2, aes(x = Station, y = TagID)) +
   labs(title = &amp;quot;Encounter histories of 25 tagged Chinook salmon smolts&amp;quot;,
        subtitle = &amp;quot;Upstream to downstream&amp;quot;) +
   hrbrthemes::theme_ipsum()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;https://fishsciences.github.io/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Hope this was helpful!&lt;/p&gt;
 &lt;/div&gt;
 </description>
@@ -247,10 +247,10 @@ ggplot(encounters2, aes(x = Station, y = TagID)) +
     
     <item>
       <title>Welcome to the Practical Pisces (a blog mostly about fish and science)</title>
-      <link>https://fishsciences.github.io/post/2018-01-03-welcome/</link>
+      <link>/post/2018-01-03-welcome/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 UTC</pubDate>
       <author>Alexander Ivanov</author>
-      <guid>https://fishsciences.github.io/post/2018-01-03-welcome/</guid>
+      <guid>/post/2018-01-03-welcome/</guid>
       <description>
 
 

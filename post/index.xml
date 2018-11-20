@@ -2,40 +2,40 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Practical Pisces</title>
-    <link>https://fishsciences.github.io/post/</link>
+    <link>/post/</link>
     <description>Recent content in Posts on Practical Pisces</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 16 Nov 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://fishsciences.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>DSM2 HYDRO Visualization Tool</title>
-      <link>https://fishsciences.github.io/post/dsm2-viz-tool/</link>
+      <link>/post/dsm2-viz-tool/</link>
       <pubDate>Fri, 16 Nov 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://fishsciences.github.io/post/dsm2-viz-tool/</guid>
+      <guid>/post/dsm2-viz-tool/</guid>
       <description>Background The Sacramento-San Joaquin Delta is an inland freshwater estuary subject to intensive management. The Delta Simulation Model II (DSM2) is one of the most commonly used hydrodynamic models for Delta planning and management with modules for hydrodynamics (HYDRO), water quality (QUAL), and particle tracking (PTM). The California Department of Water Resources uses DSM2 for planning and operation of the State Water Project (SWP) and Central Valley Project (CVP) diversion pumping as well as for management and satisfaction of stringent water quality standards.</description>
     </item>
     
     <item>
       <title>Visualizing Fish Encounter Histories</title>
-      <link>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</link>
+      <link>/post/visualizing-fish-encounter-histories/</link>
       <pubDate>Sat, 03 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</guid>
+      <guid>/post/visualizing-fish-encounter-histories/</guid>
       <description>Project Prep  Packages you’ll need: tidyverse (or individual components therein: readr, dplyr, ggplot2). Suggested package(s): extrafont, hrbrthemes.
   What is an encounter history? When working with tagged fish swimming in a river, we often generate a record of each fish’s “encounters” with the autonomous monitors in an underwater array. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (1s) or failures (0s).</description>
     </item>
     
     <item>
       <title>Welcome to the Practical Pisces (a blog mostly about fish and science)</title>
-      <link>https://fishsciences.github.io/post/2018-01-03-welcome/</link>
+      <link>/post/2018-01-03-welcome/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://fishsciences.github.io/post/2018-01-03-welcome/</guid>
+      <guid>/post/2018-01-03-welcome/</guid>
       <description>Well hello! Welcome to the Cramer Fish Sciences data science blog, the product of a handful of nerds at Cramer Fish Sciences. We’re here to share things about fish, fish science, coding, data visualization, and statistics.
 Myfanwy will be the one who can’t stop talking about fishy viz (visualization of fish data). Travis likes to think and write about simulation models and R workflows for fish sciences. Kevin is actually a tree geek, but we let him talk about fish sometimes.</description>
     </item>

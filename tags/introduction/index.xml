@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Introduction on Practical Pisces</title>
-    <link>https://fishsciences.github.io/tags/introduction/</link>
+    <link>/tags/introduction/</link>
     <description>Recent content in Introduction on Practical Pisces</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 03 Jan 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://fishsciences.github.io/tags/introduction/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/introduction/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Welcome to the Practical Pisces (a blog mostly about fish and science)</title>
-      <link>https://fishsciences.github.io/post/2018-01-03-welcome/</link>
+      <link>/post/2018-01-03-welcome/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://fishsciences.github.io/post/2018-01-03-welcome/</guid>
+      <guid>/post/2018-01-03-welcome/</guid>
       <description>Well hello! Welcome to the Cramer Fish Sciences data science blog, the product of a handful of nerds at Cramer Fish Sciences. We’re here to share things about fish, fish science, coding, data visualization, and statistics.
 Myfanwy will be the one who can’t stop talking about fishy viz (visualization of fish data). Travis likes to think and write about simulation models and R workflows for fish sciences. Kevin is actually a tree geek, but we let him talk about fish sometimes.</description>
     </item>

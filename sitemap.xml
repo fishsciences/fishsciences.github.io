@@ -3,99 +3,99 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://fishsciences.github.io/post/dsm2-viz-tool/</loc>
+    <loc>/post/dsm2-viz-tool/</loc>
     <lastmod>2018-11-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</loc>
+    <loc>/post/visualizing-fish-encounter-histories/</loc>
     <lastmod>2018-02-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/post/2018-01-03-welcome/</loc>
+    <loc>/post/2018-01-03-welcome/</loc>
     <lastmod>2018-01-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/categories/</loc>
+    <loc>/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/tags/cfs/</loc>
-    <lastmod>2018-01-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://fishsciences.github.io/categories/fish/</loc>
+    <loc>/tags/cfs/</loc>
     <lastmod>2018-01-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/tags/ggplot2/</loc>
+    <loc>/categories/fish/</loc>
+    <lastmod>2018-01-03T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/ggplot2/</loc>
     <lastmod>2018-02-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/tags/introduction/</loc>
+    <loc>/tags/introduction/</loc>
     <lastmod>2018-01-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/post/</loc>
+    <loc>/post/</loc>
     <lastmod>2018-11-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/</loc>
+    <loc>/</loc>
     <lastmod>2018-11-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/categories/r/</loc>
+    <loc>/categories/r/</loc>
     <lastmod>2018-11-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/tags/r-markdown/</loc>
+    <loc>/tags/r-markdown/</loc>
     <lastmod>2018-01-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/categories/science/</loc>
+    <loc>/categories/science/</loc>
     <lastmod>2018-01-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/categories/shiny/</loc>
+    <loc>/categories/shiny/</loc>
     <lastmod>2018-11-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/tags/</loc>
+    <loc>/tags/</loc>
     <lastmod>2018-01-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/categories/visualization/</loc>
+    <loc>/categories/visualization/</loc>
     <lastmod>2018-11-16T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://fishsciences.github.io/tags/viz/</loc>
+    <loc>/tags/viz/</loc>
     <lastmod>2018-02-03T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
