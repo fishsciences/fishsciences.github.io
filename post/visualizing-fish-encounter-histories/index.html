@@ -1,4 +1,4 @@
-	
+
 	<!doctype html>
 <html lang="en">
   <head>
@@ -42,15 +42,7 @@
 	        <h1><a href="/post/visualizing-fish-encounter-histories/">Visualizing Fish Encounter Histories</a></h1>
 	        <div class="post-time">February 3 2018</div>
 	    </header>
-	    <div class="post-after">
-	        <div class="tags">
-	            
-	                <a href="//tags/viz">viz</a>
-	            
-	                <a href="//tags/ggplot2">ggplot2</a>
-	            
-	        </div>
-	    </div>
+	 
 	    <hr>
 	    <div class="post content">
 	        
@@ -175,7 +167,7 @@ make_groups &lt;- function(tag, val) {
 <pre class="r"><code>ggplot(encounters2, aes(x = Station, y = TagID)) +
   geom_path(aes(group = grp), size = 0.25) +
   geom_point(shape = 18, size = 2) +
-  labs(title = &quot;Encounter histories of 25 tagged Chinook salmon smolts&quot;,
+  labs(title = &quot;Encounter histories of tagged Chinook salmon smolts&quot;,
        subtitle = &quot;Upstream to downstream&quot;) +
   hrbrthemes::theme_ipsum()</code></pre>
 <p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
@@ -190,7 +182,7 @@ make_groups &lt;- function(tag, val) {
 ggplot(encounters2, aes(x = Station, y = TagID)) +
   geom_path(aes(group = grp), size = 0.25) +
   geom_text(label= &quot;X&quot;, size=9, vjust=0.6, family= &quot;LEFISH&quot;) +
-  labs(title = &quot;Encounter histories of 25 tagged Chinook salmon smolts&quot;,
+  labs(title = &quot;Encounter histories of tagged Chinook salmon smolts&quot;,
        subtitle = &quot;Upstream to downstream&quot;) +
   hrbrthemes::theme_ipsum()</code></pre>
 <p><img src="/post/2018-01-05-visualizing-fish-encounter-histories_files/figure-html/unnamed-chunk-14-1.png" width="960" /></p>
@@ -205,7 +197,7 @@ ggplot(encounters2, aes(x = Station, y = TagID)) +
     </p>
 </div>
 		<nav id="pagination">
-			
+			<a class="prev" href="/post/my-favorite-r-resources/">Prev</a>
 			<a class="next" href="/post/2018-01-03-welcome/">Next</a>
 		</nav>
 	
@@ -236,4 +228,3 @@ ggplot(encounters2, aes(x = Station, y = TagID)) +
 
 
 </html>
-
