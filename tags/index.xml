@@ -1,58 +1,36 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Practical Pisces</title>
-    <link>/tags/</link>
+    <link>https://fishsciences.github.io/tags/</link>
     <description>Recent content in Tags on Practical Pisces</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 Jan 2018 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 03 Jan 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://fishsciences.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Cfs</title>
-      <link>/tags/cfs/</link>
+      <title>cfs</title>
+      <link>https://fishsciences.github.io/tags/cfs/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/cfs/</guid>
+      <guid>https://fishsciences.github.io/tags/cfs/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Ggplot2</title>
-      <link>/tags/ggplot2/</link>
-      <pubDate>Sat, 03 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/ggplot2/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Introduction</title>
-      <link>/tags/introduction/</link>
+      <title>introduction</title>
+      <link>https://fishsciences.github.io/tags/introduction/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/introduction/</guid>
+      <guid>https://fishsciences.github.io/tags/introduction/</guid>
       <description></description>
     </item>
     
     <item>
       <title>R Markdown</title>
-      <link>/tags/r-markdown/</link>
+      <link>https://fishsciences.github.io/tags/r-markdown/</link>
       <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/r-markdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Viz</title>
-      <link>/tags/viz/</link>
-      <pubDate>Sat, 03 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/viz/</guid>
+      <guid>https://fishsciences.github.io/tags/r-markdown/</guid>
       <description></description>
     </item>
     
