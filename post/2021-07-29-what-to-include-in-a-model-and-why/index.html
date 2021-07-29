@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width,minimum-scale=1">
   <meta name="generator" content="Hugo 0.86.0" />
 
-  <title>Practical Pisces</title>
+  <title>What to Include in a Model and Why | Practical Pisces</title>
   <meta name="description"
         content="">
 
@@ -15,22 +15,27 @@
   <meta name="robots" content="noindex, nofollow">
   
 
-  <link rel="alternate" type="application/rss&#43;xml" href="https://fishsciences.github.io/categories/index.xml">
+  
 
   
   
   
   <link href="/output/css/main.166474c2adad740c325e334f04665ab11fac6321b2e4394ef294bbd02fc0648d.css" integrity="sha256-FmR0wq2tdAwyXjNPBGZasR&#43;sYyGy5DlO8pS70C/AZI0=" rel="stylesheet" crossorigin="anonymous">
   <link href='https://fonts.googleapis.com/css?family=Raleway:400,200,600' rel='stylesheet' type='text/css'>
-  <meta property="og:title" content="Categories" />
-<meta property="og:description" content="" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://fishsciences.github.io/categories/" />
+  <meta property="og:title" content="What to Include in a Model and Why" />
+<meta property="og:description" content="How do you know what predictors to include in a model? Here my notes on the topic from a conversation with Dr. Matt Espe, as well as from Dr. Richard McElreath’s Statistical Rethinking textbook (1st Edition). When you include a predictor in a model, you are assuming that the samples at different levels of that predictor are not exchangeable: different levels within the predictor have different effects on the response." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://fishsciences.github.io/post/2021-07-29-what-to-include-in-a-model-and-why/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-07-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-07-29T00:00:00+00:00" />
 
-<meta itemprop="name" content="Categories">
-<meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Categories"/>
-<meta name="twitter:description" content=""/>
+<meta itemprop="name" content="What to Include in a Model and Why">
+<meta itemprop="description" content="How do you know what predictors to include in a model? Here my notes on the topic from a conversation with Dr. Matt Espe, as well as from Dr. Richard McElreath’s Statistical Rethinking textbook (1st Edition). When you include a predictor in a model, you are assuming that the samples at different levels of that predictor are not exchangeable: different levels within the predictor have different effects on the response."><meta itemprop="datePublished" content="2021-07-29T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-07-29T00:00:00+00:00" />
+<meta itemprop="wordCount" content="410">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="What to Include in a Model and Why"/>
+<meta name="twitter:description" content="How do you know what predictors to include in a model? Here my notes on the topic from a conversation with Dr. Matt Espe, as well as from Dr. Richard McElreath’s Statistical Rethinking textbook (1st Edition). When you include a predictor in a model, you are assuming that the samples at different levels of that predictor are not exchangeable: different levels within the predictor have different effects on the response."/>
 
 </head>
 
@@ -54,95 +59,54 @@
   </header>
   
   <main class="container mb-auto mt-20">
+  
   <article>
-    <div></div>
+    <header class="text-center py-20">
+      <h1 class="text-5xl pb-2">What to Include in a Model and Why</h1>
+
+      <div class="flex place-content-center">
+        
+        <p class="pr-5">
+        By <strong>
+          
+          Myfanwy Johnston
+          
+        </strong> 
+        </p>
+        
+
+        <time datetime="2021-07-29T00:00:00Z">
+          July 29, 2021
+        </time>
+      </div>
+    </header>
 
     <section>
       
-        <h2>
-          <a href="/categories/fish">
-            Category: fish
-          </a>
-        </h2>
-        
-          <div class="font-mono">
-  <a class="bg-transparent" href="/post/2018-01-03-welcome/">
-    <time datetime="2018-01-03T00:00:00Z">
-      2018-01-03
-    </time>
-    <span> &mdash; </span>
-    Welcome to the Practical Pisces (a blog mostly about fish and science)
-  </a>
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="how-do-you-know-what-predictors-to-include-in-a-model-here-my-notes-on-the-topic-from-a-conversation-with-dr.-matt-espe-as-well-as-from-dr.-richard-mcelreaths-statistical-rethinking-textbook-1st-edition." class="section level5">
+<h5>How do you know what predictors to include in a model? Here my notes on the topic from a conversation with Dr. Matt Espe, as well as from Dr. Richard McElreath’s <em>Statistical Rethinking</em> textbook (1st Edition).</h5>
+<p>When you <strong>include</strong> a predictor in a model, you are assuming that the samples at different levels of that predictor are not exchangeable: different levels within the predictor have different effects on the response. When you <strong>exclude</strong> a predictor from a model, you are saying that the samples of different groups or levels in that predictor <em>are</em> exchangeable, as far as the response is concerned. This is a strong assumption.</p>
+<p>For example, let’s say in a model of eDNA concentration, you include a predictor variable for species, with two levels (two different species). In this case, you are saying that it matters to the response that they are different species; the two species are not exchangeable in the data-generating process. If you <em>exclude</em> species as a predictor in this model, you are saying that one species has exactly the same effect on the response as the other species.</p>
+<p>From this perspective, the natural tendency (certainly mine) is to just include everything. That is okay if all the predictor variables are orthogonal (statistically independent). But with correlated variables, the model will struggle to say which one is needed for the rest to be exchangeable.</p>
+<p>For example, let’s say that in a model of fish survival, you include fork length as a predictor variable. This makes sense to do, as it’s usually the case that larger fish survive better; fish with different fork lengths are not exchangeable. But, if we include fork length AND fish weight, the model will probably struggle. It might be that once we know a fish’s fork length, knowing its weight doesn’t change predicted survival, and vice-versa - the samples become exchangeable. The model cannot resolve this, so it blows up and won’t fit properly.</p>
+<p>There are other considerations (post-treatment bias, overfitting) that go beyond the scope of this post, but general best practice is to include every predictor, as long as all predictors are orthogonal to each other. In a tightly controlled experiment, we could design it to have completely orthogonal predictors because they are randomly assigned, and similarities are blocked. In observational data, that does not happen, and we need to either structure the model so it does not blow up, or pick which predictors we include based on independence/collinearity.</p>
+<p><br>
+<br></p>
 </div>
 
-        
-      
-        <h2>
-          <a href="/categories/r">
-            Category: r
-          </a>
-        </h2>
-        
-          <div class="font-mono">
-  <a class="bg-transparent" href="/post/visualizing-fish-encounter-histories/">
-    <time datetime="2018-02-03T00:00:00Z">
-      2018-02-03
-    </time>
-    <span> &mdash; </span>
-    Visualizing Fish Encounter Histories
-  </a>
-</div>
+      <ul class="flex list-none mt-20 ml-0 p-0">
+  
+</ul>
 
-        
-          <div class="font-mono">
-  <a class="bg-transparent" href="/post/2018-01-03-welcome/">
-    <time datetime="2018-01-03T00:00:00Z">
-      2018-01-03
-    </time>
-    <span> &mdash; </span>
-    Welcome to the Practical Pisces (a blog mostly about fish and science)
-  </a>
-</div>
-
-        
-      
-        <h2>
-          <a href="/categories/science">
-            Category: science
-          </a>
-        </h2>
-        
-          <div class="font-mono">
-  <a class="bg-transparent" href="/post/2018-01-03-welcome/">
-    <time datetime="2018-01-03T00:00:00Z">
-      2018-01-03
-    </time>
-    <span> &mdash; </span>
-    Welcome to the Practical Pisces (a blog mostly about fish and science)
-  </a>
-</div>
-
-        
-      
-        <h2>
-          <a href="/categories/visualization">
-            Category: visualization
-          </a>
-        </h2>
-        
-          <div class="font-mono">
-  <a class="bg-transparent" href="/post/visualizing-fish-encounter-histories/">
-    <time datetime="2018-02-03T00:00:00Z">
-      2018-02-03
-    </time>
-    <span> &mdash; </span>
-    Visualizing Fish Encounter Histories
-  </a>
-</div>
-
-        
-      
     </section>
+
+    <div class="mt-20">
+
+
+</div>
   </article>
 </main>
   <footer class="container mt-20 py-10 border-t border-gray-700">

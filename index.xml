@@ -1,18 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Practical Pisces on Practical Pisces </title>
+    <title>Practical Pisces</title>
     <link>https://fishsciences.github.io/</link>
+    <description>Recent content on Practical Pisces</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <author>Alexander Ivanov</author>
-    <updated>2018-02-03 00:00:00 &#43;0000 UTC</updated>
+    <lastBuildDate>Thu, 29 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://fishsciences.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What to Include in a Model and Why</title>
+      <link>https://fishsciences.github.io/post/2021-07-29-what-to-include-in-a-model-and-why/</link>
+      <pubDate>Thu, 29 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://fishsciences.github.io/post/2021-07-29-what-to-include-in-a-model-and-why/</guid>
+      <description>How do you know what predictors to include in a model? Here my notes on the topic from a conversation with Dr. Matt Espe, as well as from Dr. Richard McElreath’s Statistical Rethinking textbook (1st Edition). When you include a predictor in a model, you are assuming that the samples at different levels of that predictor are not exchangeable: different levels within the predictor have different effects on the response.</description>
+    </item>
     
     <item>
-      <title>Posts</title>
-      <link>https://fishsciences.github.io/post/</link>
-      <pubDate>Sat, 03 Feb 2018 00:00:00 UTC</pubDate>
-      <author>Alexander Ivanov</author>
-      <guid>https://fishsciences.github.io/post/</guid>
-      <description></description>
+      <title>Visualizing Fish Encounter Histories</title>
+      <link>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</link>
+      <pubDate>Sat, 03 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://fishsciences.github.io/post/visualizing-fish-encounter-histories/</guid>
+      <description>Project Prep  Packages you’ll need: tidyverse (or individual components therein: readr, dplyr, ggplot2). Suggested package(s): extrafont, hrbrthemes.
+  What is an encounter history? When working with tagged fish swimming in a river, we often generate a record of each fish’s “encounters” with the autonomous monitors in an underwater array. If this in no way applies to your work, you can think of an encounter history as a simple set of Bernoulli trials, with successes (1s) or failures (0s).</description>
+    </item>
+    
+    <item>
+      <title>Welcome to the Practical Pisces (a blog mostly about fish and science)</title>
+      <link>https://fishsciences.github.io/post/2018-01-03-welcome/</link>
+      <pubDate>Wed, 03 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://fishsciences.github.io/post/2018-01-03-welcome/</guid>
+      <description>Well hello! Welcome to the Cramer Fish Sciences data science blog, the product of a handful of nerds at Cramer Fish Sciences. We’re here to share things about fish, fish science, coding, data visualization, and statistics.
+Myfanwy will be the one who can’t stop talking about fishy viz (visualization of fish data). Travis likes to think and write about simulation models and R workflows for fish sciences. Kevin is actually a tree geek, but we let him talk about fish sometimes.</description>
     </item>
     
   </channel>
